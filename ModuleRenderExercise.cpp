@@ -137,9 +137,9 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
         glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, &modelGL[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, &viewGL[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &projectionGL[0][0]);
-
+      
         // Draw Triangle
-        
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
         glDrawArrays(GL_TRIANGLES, 0, 3);
