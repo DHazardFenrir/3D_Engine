@@ -26,7 +26,7 @@ bool ModuleRenderExercise::Init()
 	
   
 	vbo = CreateTriangleVBO();
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);  // set vbo active 
+    
     
 	 vertex_shader_source = App->GetProgram()->LoadShaderSource("default_vertex.glsl");
 	 fragment_shader_source = App->GetProgram()->LoadShaderSource("default_fragment.glsl");
