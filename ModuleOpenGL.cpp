@@ -24,14 +24,14 @@ ModuleOpenGL::~ModuleOpenGL()
 // Called before render is available
 bool ModuleOpenGL::Init()
 {
-	LOG("Creating Renderer context");
-    LOG("Creating OpenGL context");
+	ENGINELOG("Creating Renderer context");
+    ENGINELOG("Creating OpenGL context");
 
     // Create OpenGL context and assign it to the private context variable
     context = SDL_GL_CreateContext(App->GetWindow()->GetSDLWindow());
     if (context == nullptr)
     {
-        LOG("OpenGL context could not be created! SDL Error: %s\n", SDL_GetError());
+        ENGINELOG("OpenGL context could not be created! SDL Error: %s\n", SDL_GetError());
         return false;
     }
 
@@ -39,16 +39,16 @@ bool ModuleOpenGL::Init()
     GLenum err = glewInit();
     if (err != GLEW_OK)
     {
-        LOG("Error initializing GLEW! %s\n", glewGetErrorString(err));
+        ENGINELOG("Error initializing GLEW! %s\n", glewGetErrorString(err));
         return false;
     }
-    LOG("Using Glew %s", glewGetString(GLEW_VERSION));
+    ENGINELOG("Using Glew %s", glewGetString(GLEW_VERSION));
 
     // Log OpenGL information
-    LOG("Vendor: %s", glGetString(GL_VENDOR));
-    LOG("Renderer: %s", glGetString(GL_RENDERER));
-    LOG("OpenGL version supported %s", glGetString(GL_VERSION));
-    LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    ENGINELOG("Vendor: %s", glGetString(GL_VENDOR));
+    ENGINELOG("Renderer: %s", glGetString(GL_RENDERER));
+    ENGINELOG("OpenGL version supported %s", glGetString(GL_VERSION));
+    ENGINELOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     glEnable(GL_DEPTH_TEST);    // Enable depth test
     glEnable(GL_CULL_FACE);     // Enable cull backward faces
@@ -85,10 +85,10 @@ update_status ModuleOpenGL::PostUpdate()
 // Called before quitting
 bool ModuleOpenGL::CleanUp()
 {
-	LOG("Destroying renderer");
+	ENGINELOG("Destroying renderer");
 
 	//Destroy window
-    LOG("Destroying OpenGL context");
+    ENGINELOG("Destroying OpenGL context");
 
     // Destroy OpenGL context if it exists
     if (context != nullptr)
@@ -106,3 +106,9 @@ void ModuleOpenGL::WindowResized(unsigned width, unsigned height)
     glViewport(0, 0, width, height);
 }
 
+float ModuleOpenGL::GetAspectRatio() const
+{
+    int width, height;
+    SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
+    return (float)(width) / (float)(height);
+}
