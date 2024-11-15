@@ -74,14 +74,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\extern\MathGeoLib\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\Source\glew-2.1.0\include;..\extern\MathGeoLib\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\extern\MathGeoLib\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\Source\glew-2.1.0\include;..\extern\MathGeoLib\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,12 +101,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\kille\Downloads\Engine\Source\Game\extern\MathGeoLib\include;glew-2.1.0\include;.\SDL\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include\GL;glew-2.1.0\include;.\SDL\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Engine\Source\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Engine\Source\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;%(AdditionalDependencies);glew32s.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -134,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\kille\Downloads\Engine\Source\Game\extern\MathGeoLib\include;.\SDL\include;;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include\GL;.\SDL\include;;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,7 +142,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glew32s.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
