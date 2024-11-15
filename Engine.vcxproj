@@ -106,7 +106,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Engine\Source\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Engine\Source\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;%(AdditionalDependencies);glew32s.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -142,7 +142,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glew32s.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
