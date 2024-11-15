@@ -101,12 +101,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include\GL;glew-2.1.0\include;.\SDL\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extern\MathGeoLib\include;.\glew-2.1.0\include\GL;glew-2.1.0\include;.\SDL\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;..\Source\SDL\lib\x64;C:\Users\kille\Downloads\Engine\Engine\Source\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;.\SDL\lib\x64;C:\Users\kille\Downloads\Engine\Engine\Source\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;%(AdditionalDependencies);glew32s.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
