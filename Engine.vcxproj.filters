@@ -16,6 +16,12 @@
     <Filter Include="extern\SDL">
       <UniqueIdentifier>{b231d00b-3851-463b-b82f-e3ea94d5de89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GAME">
+      <UniqueIdentifier>{221747e2-f73f-460e-a408-5bf775d60977}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GAME\Shaders">
+      <UniqueIdentifier>{24c8112f-ee12-4a74-80b6-ffe089e00892}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -687,6 +693,18 @@
     </None>
     <None Include="extern\SDL\include\SDL_config_macosx.h.orig">
       <Filter>extern\SDL</Filter>
+    </None>
+    <None Include="Game\glew32.dll">
+      <Filter>GAME</Filter>
+    </None>
+    <None Include="Game\SDL2.dll">
+      <Filter>GAME</Filter>
+    </None>
+    <None Include="default_fragment.glsl">
+      <Filter>GAME\Shaders</Filter>
+    </None>
+    <None Include="default_vertex.glsl">
+      <Filter>GAME\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

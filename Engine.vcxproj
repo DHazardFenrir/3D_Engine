@@ -236,6 +236,8 @@
     <ClInclude Include="Source\ModuleWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="default_fragment.glsl" />
+    <None Include="default_vertex.glsl" />
     <None Include="extern\MathGeoLib\include\Geometry\KDTree.inl" />
     <None Include="extern\MathGeoLib\include\Geometry\QuadTree.inl" />
     <None Include="extern\MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_AVX.inl" />
@@ -245,6 +247,8 @@
     <None Include="extern\SDL\include\SDL_config.h.cmake" />
     <None Include="extern\SDL\include\SDL_config.h.in" />
     <None Include="extern\SDL\include\SDL_config_macosx.h.orig" />
+    <None Include="Game\glew32.dll" />
+    <None Include="Game\SDL2.dll" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -334,12 +338,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\kille\Downloads\Engine\Source\extern\imgui;C:\Users\kille\Downloads\Engine\Source\extern\MathGeoLib\include;C:\Users\kille\Downloads\Engine\Source\extern\glew-2.1.0\include\GL;C:\Users\kille\Downloads\Engine\Source\extern\SDL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\extern\imgui;.\extern\MathGeoLib\include;.\extern\glew-2.1.0\include\GL;.\extern\SDL\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\kille\Downloads\Engine\Source\extern\glew-2.1.0\lib\Release\x64;C:\Users\kille\Downloads\Engine\Source\extern\SDL\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\extern\glew-2.1.0\lib\Release\x64;.\extern\SDL\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;%(AdditionalDependencies);glew32s.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

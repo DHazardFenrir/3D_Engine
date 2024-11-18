@@ -26,10 +26,10 @@ bool ModuleRenderExercise::Init()
 	
   
 	vbo = CreateTriangleVBO();
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     
-    
-	 vertex_shader_source = App->GetProgram()->LoadShaderSource("default_vertex.glsl");
-	 fragment_shader_source = App->GetProgram()->LoadShaderSource("default_fragment.glsl");
+	 vertex_shader_source = App->GetProgram()->LoadShaderSource("Shaders/default_vertex.glsl");
+	 fragment_shader_source = App->GetProgram()->LoadShaderSource("Shaders/default_fragment.glsl");
 	
 	 if (vertex_shader_source == nullptr || fragment_shader_source == nullptr) {
 		 std::cout<<"Error loading shader source.";
@@ -61,8 +61,9 @@ update_status ModuleRenderExercise::PreUpdate()
 update_status ModuleRenderExercise::Update() 
 {
 	
-	
+  
 	RenderVBO(vbo, shader_program);
+    
 	return UPDATE_CONTINUE;
 }
 
@@ -98,9 +99,9 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
 
         // Configuration of model matrix
         float4x4 model = float4x4::FromTRS(
-            float3(0.0f, 0.0f, 5.0f),    // Moving the triangle behind on z.
-            float4x4::identity,            // No rotation
-            float3(1.0f, 1.0f, 1.0f)      // Normal scale
+            float3(2.0f, 0.0f, 0.0f),    // Moving the triangle behind on z.
+            float4x4::RotateZ(pi / 4.0f),            // No rotation
+            float3(2.0f, 1.0f, 1.0f)      // Normal scale
         );
 
         // Configuration of camera
@@ -108,8 +109,10 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
         float3 target = float3(5.0f, 0.0f, -5.0f);    // Position of triangle. 
         float3 up = float3::unitY;
 
-        // View and Projection Matrix
-        float4x4 view = float4x4::LookAt(cameraPos, target, float3::unitY, frustum.up);
+        // View and Projection Matrix 
+       
+        float4x4 view = float4x4::LookAt(frustum.front,float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+
         float4x4 projection = frustum.ProjectionMatrix();
 
         // Transpose all matrix
@@ -126,7 +129,7 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
         // Render axis and grid
         dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
         dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
-        App->GetDebugDraw()->Draw(view, projection, width, height);
+        App->GetDebugDraw()->Draw(viewGL, projectionGL, width, height);
 
         // Render triangle
         glUseProgram(program);
@@ -155,7 +158,7 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
 
 void ModuleRenderExercise::RenderTriangle() 
 {
-   
+    
 }
 
 void ModuleRenderExercise::DestroyVBO(unsigned vbo) 
