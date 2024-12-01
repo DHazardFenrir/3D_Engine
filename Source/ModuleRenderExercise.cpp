@@ -1,15 +1,20 @@
 #include "Globals.h"
 #include "ModuleRenderExercise.h"
-
+#include <iostream>
 #include "Application.h"
 #include "ModuleOpenGL.h"
 #include "ModuleProgram.h"
+#include "ModuleEditorCamera.h"
 #include "glew.h"
 #include "debugdraw.h"
 #include "ModuleDebugDraw.h"
 #include "MathGeoLib.h"
+#include "Matx4x4.h";
 #include "ModuleWindow.h"
+#include "Math/float3.h"
 #include <SDL.h>
+
+
 
 
 ModuleRenderExercise::ModuleRenderExercise() {
@@ -23,7 +28,7 @@ ModuleRenderExercise::~ModuleRenderExercise()
 
 bool ModuleRenderExercise::Init() 
 {
-	
+    
   
 	vbo = CreateTriangleVBO();
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -84,52 +89,39 @@ bool ModuleRenderExercise::CleanUp()
 
 void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
 {
-    
-        // Frustum Config
-        Frustum frustum;
-        float aspectRatio = App->GetOpenGL()->GetAspectRatio();
-        frustum.type = FrustumType::PerspectiveFrustum;
-        frustum.pos = float3::zero;
-        frustum.front = -float3::unitZ;
-        frustum.up = float3::unitY;
-        frustum.nearPlaneDistance = 0.1f;
-        frustum.farPlaneDistance = 100.0f;
-        frustum.verticalFov = math::pi / 4.0f;
-        frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov * 0.5f) * frustum.AspectRatio());
 
-        // Configuration of model matrix
+    // Frustum Config
+   
+    int width, height;
+
+    SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
+    float aspectRatio = App->GetOpenGL()->GetAspectRatio();
+           
+
+         //Configuration of model matrix
+
         float4x4 model = float4x4::FromTRS(
-            float3(2.0f, 0.0f, 0.0f),    // Moving the triangle behind on z.
-            float4x4::RotateZ(pi / 4.0f),            // No rotation
-            float3(2.0f, 1.0f, 1.0f)      // Normal scale
+            float3(0.0f, 0.0f, 5.0f),    // Moving the triangle behind on x.
+            float4x4::RotateZ(0),            // No rotation
+            float3(1.0f, 1.0f, 1.0f)      // Normal scale
         );
 
-        // Configuration of camera
-        float3 cameraPos = float3(0.0f, 1.0f, 3.0f);  // Moving the camera position, 1 unit up and 3 on z
-        float3 target = float3(5.0f, 0.0f, -5.0f);    // Position of triangle. 
-        float3 up = float3::unitY;
+       /*  View and Projection Matrix */
+        float4x4 view = App->GetCamera()->GetViewMatrix();
+        //float4x4 view = float4x4::LookAt(frustum.Pos(), float3(0.0, 0.0, 0.0), frustum.Front(), frustum.Up(), float3::unitY);
 
-        // View and Projection Matrix 
-       
-        float4x4 view = float4x4::LookAt(frustum.front,float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+        float4x4 projection = App->GetCamera()->GetProjectionMatrix();
 
-        float4x4 projection = frustum.ProjectionMatrix();
-
-        // Transpose all matrix
-        float4x4 modelGL = model.Transposed();
-        float4x4 viewGL = view.Transposed();
-        float4x4 projectionGL = projection.Transposed();
+      
 
         // Configure of viewport
-        int width, height;
-        
-        SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
+       
        
 
         // Render axis and grid
         dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
         dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
-        App->GetDebugDraw()->Draw(viewGL, projectionGL, width, height);
+        App->GetDebugDraw()->Draw(view, projection, width, height);
 
         // Render triangle
         glUseProgram(program);
@@ -137,9 +129,9 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
       
 
         // Sending uniform matrix to shaders. 
-        glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, &modelGL[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, &viewGL[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &projectionGL[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE , &model[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &projection[0][0]);
       
         // Draw Triangle
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -152,8 +144,11 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
         // Check for errors 
         GLenum error = glGetError();
         if (error != GL_NO_ERROR) {
-            std::cout<<"OpenGL Error: %d", error;
+            std::cout << "OpenGL Error:" << error << std::endl;
         }
+
+        
+
 }
 
 void ModuleRenderExercise::RenderTriangle() 

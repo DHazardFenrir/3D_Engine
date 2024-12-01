@@ -1,7 +1,7 @@
 #pragma once
 #define NOMINMAX
 
-#include <windows.h>
+//#include <windows.h>
 #include <stdio.h>
 
 #define ENGINELOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
