@@ -3,7 +3,12 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleOpenGL.h"
+#include "ModuleWindow.h"
 #include "SDL.h"
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+#include "glew.h"
 
 ModuleInput::ModuleInput()
 {}
@@ -42,6 +47,7 @@ update_status ModuleInput::Update()
 
     while (SDL_PollEvent(&sdlEvent) != 0)
     {
+        ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
         switch (sdlEvent.type)
         {
             case SDL_QUIT:
@@ -49,6 +55,11 @@ update_status ModuleInput::Update()
             case SDL_WINDOWEVENT:
                 if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                     App->GetOpenGL()->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
+                if (SDL_GetWindowFlags(App->GetWindow()->GetSDLWindow()) & SDL_WINDOW_MINIMIZED)
+                {
+                    SDL_Delay(10);
+                    continue;
+                }
                 break;
             case SDL_KEYDOWN:
                 if (sdlEvent.key.keysym.sym == SDLK_LALT || sdlEvent.key.keysym.sym == SDLK_RALT) {
@@ -56,9 +67,10 @@ update_status ModuleInput::Update()
                 }
                 
                 break;
+
             case SDL_MOUSEMOTION:
-                if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                    // Solo rotar si el botón izquierdo está presionado
+                if (SDL_GetMouseState(NULL, NULL)) {
+                    HandleButtonMouse(sdlEvent);
                     float xrel = sdlEvent.motion.xrel;
                     float yrel = sdlEvent.motion.yrel;
                     std::cout << xrel << std::endl;
@@ -70,21 +82,30 @@ update_status ModuleInput::Update()
                     mouseX = 0;
                     mouseY = 0;
                 }
+                 
+                
                 break;
 
             case SDL_MOUSEWHEEL:
                 if (sdlEvent.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                 {
                     mouseWheel = (float)sdlEvent.wheel.x;
+                    
                 }
                 else
                 {
                     mouseWheel = (float)sdlEvent.wheel.y;
+                  
                 }
-                std::cout << "Mouse Wheeling" << std::endl;
-                std::cout << mouseWheel << std::endl;
+                
+                wheelPross = true;
+               
                 break;
-
+            case SDL_MOUSEBUTTONDOWN:
+                if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT))
+                {
+                    std::cout << "click mouse right" << std::endl;
+                }
             case SDL_KEYUP:
                 if (sdlEvent.key.keysym.sym == SDLK_LALT || sdlEvent.key.keysym.sym == SDLK_RALT) {
                     std::cout << "Alt liberado" << std::endl;
@@ -116,6 +137,29 @@ bool ModuleInput::CleanUp()
 
 float ModuleInput::GetMouseWheelMotion() const {
     return mouseWheel;
+}
+
+void ModuleInput::ResetMouse() {
+    mouseWheel = 0.0f;
+    wheelPross = false;
+}
+
+bool ModuleInput::HandleButtonMouse(SDL_Event sdlEvents) {
+    bool right = sdlEvents.motion.state & SDL_BUTTON_RMASK;
+    bool left = sdlEvents.motion.state & SDL_BUTTON_LMASK;
+
+    if (right) {
+        buttonLeft = false;
+        buttonRight = right;
+        return buttonRight;
+    }
+    else if (left) {
+        buttonRight = false;
+        buttonLeft = left;
+        return buttonLeft;
+    }
+  
+    return false;
 }
 
 

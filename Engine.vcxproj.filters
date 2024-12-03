@@ -201,6 +201,8 @@
     <ClCompile Include="Source\ModuleTexture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ModuleEditor.cpp" />
+    <ClCompile Include="extern\imgui\imgui_impl_opengl3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\debugdraw.h">
@@ -758,6 +760,7 @@
     <ClInclude Include="Source\ModuleTexture.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ModuleEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="extern\SDL\include\SDL_config.h.cmake">

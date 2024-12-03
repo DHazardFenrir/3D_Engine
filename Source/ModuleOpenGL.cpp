@@ -14,7 +14,8 @@ ModuleOpenGL::ModuleOpenGL() : context(nullptr)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);    // we want a double buffer
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); // we want to have a depth buffer with 24 bits
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);    // we want to have a stencil buffer with 8 bits
-
+    SDL_GL_SetSwapInterval(1);
+    
 }
 
 // Destructor
@@ -38,6 +39,8 @@ bool ModuleOpenGL::Init()
 
     // Initialize GLEW
     GLenum err = glewInit();
+    SDL_GL_MakeCurrent(App->GetWindow()->GetSDLWindow(), context);
+    SDL_GL_SetSwapInterval(1);
     if (err != GLEW_OK)
     {
         std::cout<<"Error initializing GLEW! %s\n", glewGetErrorString(err);
@@ -50,7 +53,7 @@ bool ModuleOpenGL::Init()
     std::cout<<"Renderer: %s", glGetString(GL_RENDERER);
     std::cout<<"OpenGL version supported %s", glGetString(GL_VERSION);
     std::cout<<"GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION);
-
+   
     glEnable(GL_DEPTH_TEST);    // Enable depth test
     glEnable(GL_CULL_FACE);     // Enable cull backward faces
     glFrontFace(GL_CCW);        // Front faces will be counter clockwise

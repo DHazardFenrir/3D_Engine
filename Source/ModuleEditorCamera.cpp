@@ -69,41 +69,45 @@ void ModuleEditorCamera::TraslateWithKeys() {
 }
 
 void ModuleEditorCamera::TraslatWithMouse(int xrel, int yrel) {
-	float pitch = yrel * rotationSpeed; // Rotación alrededor del eje X
-	float yaw = xrel * rotationSpeed;   // Rotación alrededor del eje Y
 
-	// Rotar la dirección de la cámara
-	float3 front = currentFrustum->Front();
-	float3 up = currentFrustum->Up();
+	float rotationSpeed = 5.0f;
 
-	// Aplicar rotación Yaw (alrededor del eje Y, arriba)
+	float pitch = -yrel * rotationSpeed * deltaTime;  
+	float yaw = -xrel * rotationSpeed * deltaTime;    
+
+	
 	Quat yawRotation = Quat::RotateY(DegToRad(yaw));
-	front = yawRotation.Mul(front).Normalized();
-	up = yawRotation.Mul(up).Normalized();
+	float3 front = yawRotation * currentFrustum->Front();
+	float3 up = yawRotation * currentFrustum->Up();
 
-	// Aplicar rotación Pitch (alrededor del eje X, derecha)
+	
 	float3 right = currentFrustum->WorldRight();
 	Quat pitchRotation = Quat::RotateAxisAngle(right, DegToRad(pitch));
-	front = pitchRotation.Mul(front).Normalized();
-	up = pitchRotation.Mul(up).Normalized();
+	front = pitchRotation * front;
+	up = pitchRotation * up;
 
-	// Actualizar el Frustum con los nuevos vectores
-	currentFrustum->SetFront(front);
-	currentFrustum->SetUp(up);
+	
+	currentFrustum->SetFront(front.Normalized());
+	currentFrustum->SetUp(up.Normalized());
 	
 
 }
 
 void ModuleEditorCamera::RotateWithArrows() {
-	 // Velocidad de rotación
-
-	// Detecta la entrada de las teclas
+	
 	if (App->GetInput()->GetKey(SDL_SCANCODE_UP)) {
-		float pitch = rotationSpeed * deltaTime;
-		float3x3 rotationMatrix = float3x3::RotateX(pitch);
+		
+			float pitch = rotationSpeed * deltaTime;
+			float3x3 rotationMatrix = float3x3::RotateX(pitch);
 
-		currentFrustum->SetFront(rotationMatrix * currentFrustum->Front());
-		currentFrustum->SetUp(  rotationMatrix * currentFrustum->Up());
+			currentFrustum->SetFront(rotationMatrix * currentFrustum->Front());
+			currentFrustum->SetUp(rotationMatrix * currentFrustum->Up());
+
+			std::cout << currentFrustum->Up() << std::endl;
+			std::cout << currentFrustum->Front() << std::endl;
+		
+		
+		
 		
 	}
 
@@ -119,15 +123,15 @@ void ModuleEditorCamera::RotateWithArrows() {
 	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT)) {
 		float yaw = rotationSpeed * deltaTime;
 
-		// Crea una matriz de rotación alrededor del eje Y (mundo)
-		float3 worldUp = float3::unitY; // Eje Y del mundo
+		
+		float3 worldUp = float3::unitY; 
 		Quat rotationQuat = Quat::RotateY(yaw);
 
-		// Aplica la rotación al frente de la cámara
+		
 		float3 newFront = rotationQuat * currentFrustum->Front();
 		float3 newUp = rotationQuat * currentFrustum->Up();
 
-		// Actualiza el frustum
+		
 		currentFrustum->SetFront(newFront.Normalized());
 		currentFrustum->SetUp(newUp.Normalized());
 	}
@@ -136,15 +140,15 @@ void ModuleEditorCamera::RotateWithArrows() {
 	if (App->GetInput()->GetKey(SDL_SCANCODE_RIGHT)) {
 		float yaw = -rotationSpeed * deltaTime;
 
-		// Crea una matriz de rotación alrededor del eje Y (mundo)
-		float3 worldUp = float3::unitY; // Eje Y del mundo
+		
+		float3 worldUp = float3::unitY; 
 		Quat rotationQuat = Quat::RotateY(yaw);
 
-		// Aplica la rotación al frente de la cámara
+		
 		float3 newFront = rotationQuat * currentFrustum->Front();
 		float3 newUp = rotationQuat * currentFrustum->Up();
 
-		// Actualiza el frustum
+		
 		currentFrustum->SetFront(newFront.Normalized());
 		currentFrustum->SetUp(newUp.Normalized());
 	}
@@ -183,13 +187,27 @@ update_status ModuleEditorCamera::Update() {
 
 	TraslateWithKeys();
 	RotateWithArrows();
-	TraslatWithMouse(App->GetInput()->mouseX, App->GetInput()->mouseY);
+	
+	
 	float mouseMotion = App->GetInput()->GetMouseWheelMotion();
-	if (mouseMotion < -FLT_EPSILON || mouseMotion > FLT_EPSILON)
+	if (mouseMotion != 0.0f && App->GetInput()->wheelPross)
 	{
-		Zoom(mouseMotion * 0.01f);
-		std::cout << "Mous2" << std::endl;
+		std::cout << mouseMotion << std::endl;
+		Zoom(mouseMotion * 0.5f);
+		
+		App->GetInput()->ResetMouse();
 	}
+	
+	
+	if (App->GetInput()->buttonLeft) 
+	{
+		TraslatWithMouse(App->GetInput()->mouseX, App->GetInput()->mouseY);
+	}
+	if (App->GetInput()->buttonRight) {
+		Pan(App->GetInput()->mouseX, App->GetInput()->mouseY);
+	}
+		
+		
 	
 	return UPDATE_CONTINUE;
 }
@@ -216,5 +234,17 @@ float4x4 ModuleEditorCamera::GetProjectionMatrix() const {
 void ModuleEditorCamera::Zoom(float amount) {
 	//vec currentTranslation = currentFrustum->Front().Normalized() * cameraSpeed * deltaTime;
 	currentFrustum->SetPos(currentFrustum->Pos() + currentFrustum->Front().Normalized()* amount);
+   
+	std::cout << currentFrustum->Pos() << std::endl;
+}
 
+void ModuleEditorCamera::Pan(int xrel, int yrel) {
+	float panSpeed = 0.1f;
+	float3 right = currentFrustum->WorldRight();
+	float3 up = currentFrustum->Up();
+
+	float3 deltaX = -right * (xrel * panSpeed * deltaTime);
+	float3 deltaY = up * (yrel * panSpeed * deltaTime);
+
+	currentFrustum->SetPos(currentFrustum->Pos() + (deltaX + deltaY));
 }

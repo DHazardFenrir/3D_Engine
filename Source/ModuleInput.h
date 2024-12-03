@@ -16,21 +16,24 @@ public:
 	bool GetMouse(SDL_EventType  mouseScan);
 	bool Init();
 	float GetMouseWheelMotion() const;
-
-	const float2& GetMouseMotion() const;
-	const float2& GetMousePosition() const;
+	void ResetMouse();
+	bool buttonLeft;
+	bool buttonRight;
+	bool HandleButtonMouse(SDL_Event sdlEvents);
+	
+	
 	update_status Update();
 
 	bool CleanUp();
 	
 	float mouseX = 0;
 	float mouseY = 0;
+	bool wheelPross = false;
 private:
 	const Uint8 *keyboard = NULL;
 	const Uint32 *mouse = NULL;
 	float mouseWheel = 0;
-	float2 mouseMotion = { 0, 0 };
-	float2 mousePos = { 0, 0 };
+	
 	bool mouseWarped = false;
 	
 };

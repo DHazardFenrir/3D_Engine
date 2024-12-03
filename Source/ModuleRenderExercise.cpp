@@ -31,7 +31,8 @@ bool ModuleRenderExercise::Init()
     
   
 	vbo = CreateTriangleVBO();
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    vao = CreateVAO();
+    ebo = CreateEBO();
     
 	 vertex_shader_source = App->GetProgram()->LoadShaderSource("Shaders/default_vertex.glsl");
 	 fragment_shader_source = App->GetProgram()->LoadShaderSource("Shaders/default_fragment.glsl");
@@ -67,7 +68,7 @@ update_status ModuleRenderExercise::Update()
 {
 	
   
-	RenderVBO(vbo, shader_program);
+	RenderVBO();
     
 	return UPDATE_CONTINUE;
 }
@@ -87,7 +88,7 @@ bool ModuleRenderExercise::CleanUp()
 	return true;
 }
 
-void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
+void ModuleRenderExercise::RenderVBO()
 {
 
     // Frustum Config
@@ -124,20 +125,18 @@ void ModuleRenderExercise::RenderVBO(unsigned vbo, unsigned program)
         App->GetDebugDraw()->Draw(view, projection, width, height);
 
         // Render triangle
-        glUseProgram(program);
+        glUseProgram(shader_program);
         
       
 
         // Sending uniform matrix to shaders. 
-        glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE , &model[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &projection[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"), 1, GL_TRUE , &model[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), 1, GL_TRUE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader_program, "proj"), 1, GL_TRUE, &projection[0][0]);
       
         // Draw Triangle
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         
 
