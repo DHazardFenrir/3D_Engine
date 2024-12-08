@@ -3,7 +3,8 @@
 
 //#include <windows.h>
 #include <stdio.h>
-
+#include <string>
+#include <vector>
 #define ENGINELOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
 void log(const char file[], int line, const char* format, ...);

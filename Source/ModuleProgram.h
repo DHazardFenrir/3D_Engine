@@ -10,6 +10,7 @@ public:
 	unsigned CreateProgram(unsigned vtx_shader, unsigned frg_shader);
 	unsigned CompileShader(unsigned type, const char* source);
 	char* LoadShaderSource(const char* shader_file_name);
+	
 	bool Init();
 
 

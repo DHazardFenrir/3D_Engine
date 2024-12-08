@@ -18,7 +18,15 @@ public:
 	void RotateWithArrows();
 	bool Init();
 	void Pan(int xrel, int yrel);
-	//Frustum* GetFrustum();
+	void SetFov(float fov);
+	void SetAspectRatio(float aspectRatio);
+	void SetPlaneDistance(float near, float far);
+	void SetPosition(float x, float y, float z);
+	void SetRotation(const float3x3 rotationMtx);
+	void SetRotation(const Quat rotationMtx);
+	void ResizeWindow(int width, int height);
+	void LookAt(float x, float y, float z);
+	void Rotate(const float3x3& rotationMatrix);
 	float4x4 GetProjectionMatrix() const;
 	float4x4 GetViewMatrix() const;
 	update_status PreUpdate();
@@ -28,7 +36,8 @@ public:
 	inline float DegToRad(float degrees) {
 		return degrees * 0.0174532925f; // Grados a radianes
 	}
-	 bool CleanUp()override;
+	bool CleanUp();
+	
 
 private:
 	Frustum frustum = Frustum();
@@ -39,7 +48,11 @@ private:
 	Uint64 startFrame = 0;
 	Uint64 lastFrame = 0;
 	float rotationSpeed = 0.5f;
-	float focusDistance = 0.0f;
-	
+	float panSpeed = 0.1;
+	vec cameraPosition;
+	vec cameraDirection;
+	vec cameraTarget;
+	vec cameraUp;
+	vec cameraRight;
 };
 

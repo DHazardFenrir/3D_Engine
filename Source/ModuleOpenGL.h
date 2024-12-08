@@ -21,7 +21,7 @@ public:
 	void* context = nullptr;
 	void WindowResized(unsigned width, unsigned height);
 	float GetAspectRatio() const;
-	
+	void RenderUI() override;
 private:
 	
 };

@@ -203,6 +203,9 @@
     </ClCompile>
     <ClCompile Include="Source\ModuleEditor.cpp" />
     <ClCompile Include="extern\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Source\Logger.cpp" />
+    <ClCompile Include="Source\ModuleHardware.cpp" />
+    <ClCompile Include="ModuleLoadModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\debugdraw.h">
@@ -761,6 +764,8 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\ModuleEditor.h" />
+    <ClInclude Include="Source\ModuleHardware.h" />
+    <ClInclude Include="ModuleLoadModel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="extern\SDL\include\SDL_config.h.cmake">
@@ -787,5 +792,9 @@
     <None Include="extern\MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl">
       <Filter>extern\MathGeoLib</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\Test-image-Baboon.dds" />
+    <Image Include="resources\Test-image-Baboon.tga" />
   </ItemGroup>
 </Project>

@@ -7,6 +7,8 @@
 #include "ModuleDebugDraw.h"
 #include "ModuleProgram.h"
 #include "ModuleEditor.h"
+#include "ModuleTexture.h"
+#include "ModuleHardware.h"
 
 #include "ModuleRenderExercise.h"
 
@@ -21,9 +23,10 @@ Application::Application()
 	modules.push_back(camera = new ModuleEditorCamera());
 	modules.push_back(draw = new ModuleDebugDraw());
 	modules.push_back(program = new ModuleProgram());
+	modules.push_back(text = new ModuleTexture());
 	modules.push_back(exercise = new ModuleRenderExercise());
+	modules.push_back(info = new ModuleHardware());
 	modules.push_back(GUI = new ModuleEditor());
-	
 	
 	
 }
@@ -70,4 +73,9 @@ bool Application::CleanUp()
 		ret = (*it)->CleanUp();
 
 	return ret;
+}
+
+void Application::RequestBrowser(const std::string& url)
+{
+	ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }

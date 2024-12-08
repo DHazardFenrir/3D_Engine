@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Globals.h"
+#include <SDL.h>
+#include <glew.h>
+#include <cstdio>
 
 class Application;
 
@@ -40,4 +43,6 @@ public:
 	{ 
 		return true; 
 	}
+
+	virtual void RenderUI() {}
 };

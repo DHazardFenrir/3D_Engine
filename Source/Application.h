@@ -13,7 +13,8 @@ class ModuleDebugDraw;
 class ModuleRenderExercise;
 class ModuleProgram;
 class ModuleEditor;
-
+class ModuleTexture;
+class ModuleHardware;
 class Application
 {
 public:
@@ -33,6 +34,9 @@ public:
     ModuleDebugDraw* GetDebugDraw() { return draw; }
     ModuleEditorCamera* GetCamera() { return camera; }
     ModuleEditor* GetGUI() { return  GUI; }
+    ModuleTexture* GetTxt() { return text; }
+    ModuleHardware* GetInfo() { return info; }
+    void RequestBrowser(const std::string& url);
 
 private:
 
@@ -44,6 +48,8 @@ private:
     ModuleDebugDraw* draw = nullptr;
     ModuleEditorCamera* camera = nullptr;
     ModuleEditor* GUI = nullptr;
+    ModuleTexture* text = nullptr;
+    ModuleHardware* info = nullptr;
     std::list<Module*> modules;
 
 };

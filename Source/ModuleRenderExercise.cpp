@@ -5,6 +5,7 @@
 #include "ModuleOpenGL.h"
 #include "ModuleProgram.h"
 #include "ModuleEditorCamera.h"
+#include "ModuleTexture.h"
 #include "glew.h"
 #include "debugdraw.h"
 #include "ModuleDebugDraw.h"
@@ -85,6 +86,8 @@ bool ModuleRenderExercise::CleanUp()
 	if (fragment_shader_source) free(fragment_shader_source);
 	glDeleteProgram(shader_program);
 	DestroyVBO(vbo);
+    DestroyVAO(vao);
+    DestroyEBO(ebo);
 	return true;
 }
 
@@ -97,29 +100,30 @@ void ModuleRenderExercise::RenderVBO()
 
     SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
     float aspectRatio = App->GetOpenGL()->GetAspectRatio();
-           
+    //       
 
-         //Configuration of model matrix
+    //     //Configuration of model matrix
 
         float4x4 model = float4x4::FromTRS(
-            float3(0.0f, 0.0f, 5.0f),    // Moving the triangle behind on x.
+            float3(0.0f, 0.0f, 2.0f),    // Moving the triangle behind on x.
             float4x4::RotateZ(0),            // No rotation
             float3(1.0f, 1.0f, 1.0f)      // Normal scale
         );
 
-       /*  View and Projection Matrix */
+    //   /*  View and Projection Matrix */
         float4x4 view = App->GetCamera()->GetViewMatrix();
-        //float4x4 view = float4x4::LookAt(frustum.Pos(), float3(0.0, 0.0, 0.0), frustum.Front(), frustum.Up(), float3::unitY);
+        //App->GetCamera()->LookAt(5.0f, 1.0, 5.0);
+    //    //float4x4 view = float4x4::LookAt(frustum.Pos(), float3(0.0, 0.0, 0.0), frustum.Front(), frustum.Up(), float3::unitY);
 
         float4x4 projection = App->GetCamera()->GetProjectionMatrix();
 
-      
+    //  
 
-        // Configure of viewport
-       
-       
+    //    // Configure of viewport
+    //   
+    //   
 
-        // Render axis and grid
+    //    // Render axis and grid
         dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
         dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
         App->GetDebugDraw()->Draw(view, projection, width, height);
@@ -133,7 +137,10 @@ void ModuleRenderExercise::RenderVBO()
         glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"), 1, GL_TRUE , &model[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), 1, GL_TRUE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(shader_program, "proj"), 1, GL_TRUE, &projection[0][0]);
-      
+        glUniform1i(glGetUniformLocation(shader_program, "mytexture"), 0);
+        glActiveTexture(GL_TEXTURE0);
+       
+       
         // Draw Triangle
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -158,4 +165,14 @@ void ModuleRenderExercise::RenderTriangle()
 void ModuleRenderExercise::DestroyVBO(unsigned vbo) 
 {
 	glDeleteBuffers(1, &vbo);
+}
+
+void ModuleRenderExercise::DestroyVAO(unsigned vao)
+{
+    glDeleteBuffers(1, &vao);
+}
+
+void ModuleRenderExercise::DestroyEBO(unsigned ebo)
+{
+    glDeleteBuffers(1, &ebo);
 }

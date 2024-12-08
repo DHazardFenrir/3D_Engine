@@ -98,7 +98,7 @@ update_status ModuleInput::Update()
                   
                 }
                 
-                wheelPross = true;
+                wheelPress = true;
                
                 break;
             case SDL_MOUSEBUTTONDOWN:
@@ -141,7 +141,7 @@ float ModuleInput::GetMouseWheelMotion() const {
 
 void ModuleInput::ResetMouse() {
     mouseWheel = 0.0f;
-    wheelPross = false;
+    wheelPress = false;
 }
 
 bool ModuleInput::HandleButtonMouse(SDL_Event sdlEvents) {
@@ -161,5 +161,7 @@ bool ModuleInput::HandleButtonMouse(SDL_Event sdlEvents) {
   
     return false;
 }
+
+
 
 

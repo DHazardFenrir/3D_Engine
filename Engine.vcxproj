@@ -68,6 +68,9 @@
     <ClCompile Include="extern\MathGeoLib\include\Math\SSEMath.cpp" />
     <ClCompile Include="extern\MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="extern\MathGeoLib\include\Time\Clock.cpp" />
+    <ClCompile Include="ModuleLoadModel.cpp" />
+    <ClCompile Include="Source\ModuleHardware.cpp" />
+    <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\ModuleEditor.cpp" />
     <ClCompile Include="Source\ModuleTexture.cpp" />
     <ClCompile Include="Source\Matx4x4.cpp" />
@@ -252,6 +255,8 @@
     <ClInclude Include="extern\SDL\include\SDL_version.h" />
     <ClInclude Include="extern\SDL\include\SDL_video.h" />
     <ClInclude Include="extern\SDL\include\SDL_vulkan.h" />
+    <ClInclude Include="ModuleLoadModel.h" />
+    <ClInclude Include="Source\ModuleHardware.h" />
     <ClInclude Include="Source\ModuleEditor.h" />
     <ClInclude Include="Source\ModuleTexture.h" />
     <ClInclude Include="Source\Matx4x4.h" />
@@ -278,6 +283,10 @@
     <None Include="extern\SDL\include\SDL_config_macosx.h.orig" />
     <None Include="Game\glew32.dll" />
     <None Include="Game\SDL2.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\Test-image-Baboon.dds" />
+    <Image Include="resources\Test-image-Baboon.tga" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -401,7 +410,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\extern\imgui;..\extern\MathGeoLib\include;..\Source\glew-2.1.0\include;.\SDL\include;C:\Users\kille\Downloads\Engine\Source\glew-2.1.0\include;C:\Users\kille\Downloads\MathGeoLib\MathGeoLib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\3D_Engine\extern\imgui;C:\dev\3D_Engine\extern\MathGeoLib\include;C:\dev\3D_Engine\extern\glew-2.1.0\include;C:\dev\3D_Engine\extern\SDL\include;C:\dev\3D_Engine\extern\DirectXTex\installs</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -409,7 +418,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glew32s.lib;glew32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Source\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;..\Source\SDL\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\dev\3D_Engine\extern\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;C:\dev\3D_Engine\extern\SDL\lib\x64;C:\dev\3D_Engine\extern\DirectXTex\Bin\Desktop_2022\x64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

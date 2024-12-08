@@ -7,6 +7,7 @@
 #include "ModuleWindow.h"
 #include "ModuleOpenGL.h"
 #include "Application.h"
+#include "ModuleHardware.h"
 #include "Globals.h"
 #include <iostream>
 #include "glew.h"
@@ -20,11 +21,14 @@ ModuleEditor::~ModuleEditor() {
 }
 
 bool ModuleEditor::Init() {
+	InitializeFpsLog(200);
+	InitializeMSLog(10);
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.Fonts->AddFontDefault();
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -34,9 +38,8 @@ bool ModuleEditor::Init() {
 	ImGui_ImplSDL2_InitForOpenGL(App->GetWindow()->GetSDLWindow(), App->GetOpenGL()->context);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	
+	
 
 	
 	
@@ -45,6 +48,7 @@ bool ModuleEditor::Init() {
 
 update_status ModuleEditor::PreUpdate() {
 	
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
@@ -53,24 +57,84 @@ update_status ModuleEditor::PreUpdate() {
 }
 
 update_status ModuleEditor::Update() {
-	
-	
-	// Build UI
-	ImGui::Begin("Demo Window");
-	ImGui::Text("Hello, world!");
-	ImGui::End();
-	
 
-	// Render ImGui data
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	{
 	
-	return UPDATE_CONTINUE;
-}
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		ImGui::Begin("About Window"); // Crear la ventana principal
+		
+		{
+			RenderUI();
+		
+				
+			
+			
+
+			
+		}
+		
+		ImGui::End(); 
+		
+
+		ImGui::Begin("Framerate & Miliseconds Window");
+		{
+			float currentFPS = io.Framerate;
+
+			UpdateFpsLog(currentFPS);
+
+			ImGui::Text("Application average (%.1f FPS)", currentFPS);
+			ImGui::PlotHistogram(
+				"Framerate",
+				fpsLog.data(),
+				FPS_LOG_SIZE,
+				fpsIndex,
+				nullptr,
+				0.0f,
+				*std::max_element(fpsLog.begin(), fpsLog.end()),
+				ImVec2(0, 80)
+			);
+
+			float currentMS = 1000.0f/currentFPS;
+
+			UpdateMSLog(currentMS);
+
+			ImGui::Text("Application average %.3f ms/frame", currentMS);
+			ImGui::PlotHistogram(
+				"Miliseconds",
+				msLog.data(),
+				MS_LOG_SIZE,
+				msLogIndex,
+				nullptr,
+				0.0f,
+				*std::max_element(msLog.begin(), msLog.end()),
+				ImVec2(0, 80)
+			);
+		}
+		ImGui::End();
+		
+
+		
+			
+		
+		
+		
+	}
+
+
+		App->GetInfo()->RenderUI();
+		
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		
+		return UPDATE_CONTINUE;
+	}
+
+
 
 update_status ModuleEditor::PostUpdate() {
 	// Render main window
-	SDL_GL_SwapWindow(App->GetWindow()->window);
+	glClear(GL_COLOR_BUFFER_BIT);
 	
 	
 	
@@ -85,4 +149,71 @@ bool ModuleEditor::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 	return true;
+}
+
+void ModuleEditor::InitializeFpsLog(int size)
+{
+	FPS_LOG_SIZE = size;
+	fpsLog.resize(FPS_LOG_SIZE, 0.0f);
+}
+
+void ModuleEditor::InitializeMSLog(int size)
+{
+	MS_LOG_SIZE = size;
+	msLog.resize(FPS_LOG_SIZE, 0.0f);
+}
+
+void ModuleEditor::UpdateMSLog(float currentMS)
+{
+	msLog[msLogIndex] = currentMS;
+	msLogIndex = (msLogIndex + 1) % MS_LOG_SIZE;
+}
+
+void ModuleEditor::UpdateFpsLog(float currentFPS)
+{
+	fpsLog[fpsIndex] = currentFPS;
+	fpsIndex = (fpsIndex + 1) % FPS_LOG_SIZE;
+}
+
+void ModuleEditor::RenderUI()
+{
+	if (ImGui::CollapsingHeader("About")) 
+	{
+		if (ImGui::BeginTabBar("AboutTabs"))
+		{
+			if (ImGui::BeginTabItem("General Info"))
+			{
+				ImGui::Text("Name of Engine: %s", nameEngine.c_str());
+				ImGui::Text("Description : %s", description.c_str());
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Author Info"))
+			{
+				ImGui::Text("Name of Author: %s", nameAuthor.c_str());
+				ImGui::Text("Contact: example@example.com");
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Links"))
+			{
+				if (ImGui::Button("Visit GitHub"))
+					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine");
+
+				if (ImGui::Button("Report an Issue"))
+					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine/issues");
+
+				if (ImGui::Button("Documentation"))
+					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine");
+
+				if (ImGui::Button("Download latest"))
+					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine");
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar(); 
+		}
+	}
+	
 }

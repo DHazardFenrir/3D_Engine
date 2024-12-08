@@ -28,7 +28,7 @@ public:
 	
 	float mouseX = 0;
 	float mouseY = 0;
-	bool wheelPross = false;
+	bool wheelPress = false;
 private:
 	const Uint8 *keyboard = NULL;
 	const Uint32 *mouse = NULL;

@@ -10,6 +10,7 @@
 #include "MathGeoLib.h"
 #include "ModuleWindow.h"
 #include "Math/float3.h"
+#include "imgui.h"
 #include <SDL.h>
 
 
@@ -98,13 +99,12 @@ void ModuleEditorCamera::RotateWithArrows() {
 	if (App->GetInput()->GetKey(SDL_SCANCODE_UP)) {
 		
 			float pitch = rotationSpeed * deltaTime;
-			float3x3 rotationMatrix = float3x3::RotateX(pitch);
+			//float3x3 rotationMatrix = float3x3::RotateX(pitch);
+			SetRotation(float3x3::RotateX(pitch));
+			/*currentFrustum->SetFront(rotationMatrix * currentFrustum->Front());
+			currentFrustum->SetUp(rotationMatrix * currentFrustum->Up());*/
 
-			currentFrustum->SetFront(rotationMatrix * currentFrustum->Front());
-			currentFrustum->SetUp(rotationMatrix * currentFrustum->Up());
-
-			std::cout << currentFrustum->Up() << std::endl;
-			std::cout << currentFrustum->Front() << std::endl;
+			
 		
 		
 		
@@ -113,44 +113,27 @@ void ModuleEditorCamera::RotateWithArrows() {
 
 	if(App->GetInput()->GetKey(SDL_SCANCODE_DOWN)) {
 		float pitch = -rotationSpeed * deltaTime;
-		float3x3 rotationMatrix = float3x3::RotateX(pitch);
+		 SetRotation(float3x3::RotateX(pitch));
 
-		currentFrustum->SetFront(rotationMatrix * currentFrustum->Front());
-		currentFrustum->SetUp(rotationMatrix * currentFrustum->Up());
+		
 
 	}
 
 	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT)) {
 		float yaw = rotationSpeed * deltaTime;
+		SetRotation(Quat::RotateY(yaw));
 
 		
-		float3 worldUp = float3::unitY; 
-		Quat rotationQuat = Quat::RotateY(yaw);
-
 		
-		float3 newFront = rotationQuat * currentFrustum->Front();
-		float3 newUp = rotationQuat * currentFrustum->Up();
-
-		
-		currentFrustum->SetFront(newFront.Normalized());
-		currentFrustum->SetUp(newUp.Normalized());
 	}
 
 
 	if (App->GetInput()->GetKey(SDL_SCANCODE_RIGHT)) {
 		float yaw = -rotationSpeed * deltaTime;
+		SetRotation( Quat::RotateY(yaw));
 
 		
-		float3 worldUp = float3::unitY; 
-		Quat rotationQuat = Quat::RotateY(yaw);
-
 		
-		float3 newFront = rotationQuat * currentFrustum->Front();
-		float3 newUp = rotationQuat * currentFrustum->Up();
-
-		
-		currentFrustum->SetFront(newFront.Normalized());
-		currentFrustum->SetUp(newUp.Normalized());
 	}
 }
 
@@ -167,7 +150,7 @@ bool ModuleEditorCamera::Init() {
 	currentFrustum->SetUp(float3::unitY);
 
 
-	currentFrustum->SetViewPlaneDistances(0.1f, 100.0f);
+	currentFrustum->SetViewPlaneDistances(0.1f, 1000.0f);
 	currentFrustum->SetVerticalFovAndAspectRatio(math::pi / 4.0f, aspectRatio);
 	return true;
 }
@@ -189,11 +172,11 @@ update_status ModuleEditorCamera::Update() {
 	RotateWithArrows();
 	
 	
-	float mouseMotion = App->GetInput()->GetMouseWheelMotion();
-	if (mouseMotion != 0.0f && App->GetInput()->wheelPross)
+	float mouseWheelMotion = App->GetInput()->GetMouseWheelMotion();
+	if (mouseWheelMotion != 0.0f && App->GetInput()->wheelPress)
 	{
-		std::cout << mouseMotion << std::endl;
-		Zoom(mouseMotion * 0.5f);
+		std::cout << mouseWheelMotion << std::endl;
+		Zoom(mouseWheelMotion * 0.5f);
 		
 		App->GetInput()->ResetMouse();
 	}
@@ -231,15 +214,16 @@ float4x4 ModuleEditorCamera::GetProjectionMatrix() const {
 	return currentFrustum->ProjectionMatrix();
 }
 
-void ModuleEditorCamera::Zoom(float amount) {
-	//vec currentTranslation = currentFrustum->Front().Normalized() * cameraSpeed * deltaTime;
+void ModuleEditorCamera::Zoom(float amount) 
+{
 	currentFrustum->SetPos(currentFrustum->Pos() + currentFrustum->Front().Normalized()* amount);
    
 	std::cout << currentFrustum->Pos() << std::endl;
 }
 
-void ModuleEditorCamera::Pan(int xrel, int yrel) {
-	float panSpeed = 0.1f;
+void ModuleEditorCamera::Pan(int xrel, int yrel) 
+{
+	
 	float3 right = currentFrustum->WorldRight();
 	float3 up = currentFrustum->Up();
 
@@ -248,3 +232,72 @@ void ModuleEditorCamera::Pan(int xrel, int yrel) {
 
 	currentFrustum->SetPos(currentFrustum->Pos() + (deltaX + deltaY));
 }
+
+void ModuleEditorCamera::SetFov(float fov)
+{
+	currentFrustum->SetHorizontalFovAndAspectRatio(fov / 4.0f, currentFrustum->AspectRatio());
+}
+
+void ModuleEditorCamera::SetAspectRatio(float aspectRatio)
+{
+	currentFrustum->SetVerticalFovAndAspectRatio(currentFrustum->VerticalFov(), aspectRatio);
+}
+
+void ModuleEditorCamera::SetPlaneDistance(float near, float far)
+{
+	currentFrustum->SetViewPlaneDistances(near, far);
+}
+
+void ModuleEditorCamera::SetPosition(float x, float y, float z)
+{
+	currentFrustum->SetPos({ x,y,z });
+}
+
+void ModuleEditorCamera::SetRotation(const float3x3 rotationMtx)
+{
+	currentFrustum->SetFront(rotationMtx * currentFrustum->Front());
+	currentFrustum->SetUp(rotationMtx * currentFrustum->Up());
+}
+
+void ModuleEditorCamera::SetRotation(const Quat rotationQuat) {
+	
+	float3 newFront = rotationQuat * currentFrustum->Front();
+	float3 newUp = rotationQuat * currentFrustum->Up();
+
+
+	currentFrustum->SetFront(newFront.Normalized());
+	currentFrustum->SetUp(newUp.Normalized());
+}
+
+void ModuleEditorCamera::ResizeWindow(int width, int height)
+{
+	SetAspectRatio((float)width / (float(height)));
+}
+
+void ModuleEditorCamera::LookAt(float x, float y, float z)
+{
+	vec direction = vec(x, y, z) - currentFrustum->Pos();
+	direction.Normalize();
+	vec up = vec::unitY;
+
+	// Special case for when looking straight up
+	if (direction.Cross(up).IsZero())
+	{
+		up = vec::unitZ;
+	}
+
+	Rotate(float3x3::LookAt(currentFrustum->Front().Normalized(), direction, currentFrustum->Up().Normalized(), up));
+	
+	
+	
+
+}
+void ModuleEditorCamera::Rotate(const float3x3& rotationMatrix)
+{
+	vec oldFront = currentFrustum->Front().Normalized();
+	vec oldUp = currentFrustum->Up().Normalized();
+	currentFrustum->SetFront(rotationMatrix * oldFront);
+	currentFrustum->SetUp(rotationMatrix * oldUp);
+}
+
+

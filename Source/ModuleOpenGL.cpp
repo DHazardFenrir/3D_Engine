@@ -5,7 +5,7 @@
 #include "ModuleWindow.h"
 #include "SDL.h"
 #include "glew.h"
-
+#include "imgui.h"
 ModuleOpenGL::ModuleOpenGL() : context(nullptr)
 {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);  // desired version
@@ -14,7 +14,7 @@ ModuleOpenGL::ModuleOpenGL() : context(nullptr)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);    // we want a double buffer
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); // we want to have a depth buffer with 24 bits
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);    // we want to have a stencil buffer with 8 bits
-    SDL_GL_SetSwapInterval(1);
+   
     
 }
 
@@ -46,12 +46,12 @@ bool ModuleOpenGL::Init()
         std::cout<<"Error initializing GLEW! %s\n", glewGetErrorString(err);
         return false;
     }
-    std::cout<<"Using Glew %s", glewGetString(GLEW_VERSION);
+    std::cout<<"Using Glew %s\n", glewGetString(GLEW_VERSION);
 
     // Log OpenGL information
-    std::cout<<"Vendor: %s", glGetString(GL_VENDOR);
-    std::cout<<"Renderer: %s", glGetString(GL_RENDERER);
-    std::cout<<"OpenGL version supported %s", glGetString(GL_VERSION);
+    printf("Vendor: %s\n", glGetString(GL_VENDOR));
+    std::cout<<"Renderer: %s\n", glGetString(GL_RENDERER);
+    std::cout<<"OpenGL version supported %s\n", glGetString(GL_VERSION);
     std::cout<<"GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION);
    
     glEnable(GL_DEPTH_TEST);    // Enable depth test
@@ -67,7 +67,7 @@ update_status ModuleOpenGL::PreUpdate()
     SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
     glViewport(0, 0, width, height);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	return UPDATE_CONTINUE;
 }
@@ -75,6 +75,8 @@ update_status ModuleOpenGL::PreUpdate()
 // Called every draw update
 update_status ModuleOpenGL::Update()
 {
+   
+    
 
 	return UPDATE_CONTINUE;
 }
@@ -115,4 +117,8 @@ float ModuleOpenGL::GetAspectRatio() const
     int width, height;
     SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
     return (float)(width) / (float)(height);
+}
+
+void ModuleOpenGL::RenderUI()
+{
 }
