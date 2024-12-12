@@ -72,11 +72,19 @@ update_status ModuleLoadModel::Update()
 void ModuleLoadModel::ProcessNode(const tinygltf::Model& model, int nodeIndex, unsigned int program)
 {
     const tinygltf::Node& node = model.nodes[nodeIndex];
-    if (node.name != "RootNode") 
+    if (node.name != "RootNode" || node.name.empty())
     {
         float4x4 localTransform = float4x4::identity;
 
         if (!node.matrix.empty()) {
+            float scaleX = node.matrix[0];
+            float scaleY = node.matrix[5];
+            float scaleZ = node.matrix[10];
+
+            if (fabs(scaleX) < 1e-6f) scaleX = 1.0f; 
+            if (fabs(scaleY) < 1e-6f) scaleY = 1.0f;
+            if (fabs(scaleZ) < 1e-6f) scaleZ = 1.0f;
+            printf("Node [%d]: Scale (%f, %f, %f)\n", nodeIndex, scaleX, scaleY, scaleZ);
             localTransform.Set(
                 node.matrix[0], node.matrix[1], node.matrix[2], node.matrix[3],
                 node.matrix[4], node.matrix[5], node.matrix[6], node.matrix[7],

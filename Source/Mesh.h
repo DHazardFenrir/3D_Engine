@@ -22,6 +22,7 @@ public:
 
 	unsigned int VAO;
 	unsigned int VBO;
+	unsigned int TexVBO;
 	unsigned int EBO;
 	unsigned int vertexCount;
 	unsigned int indCount;

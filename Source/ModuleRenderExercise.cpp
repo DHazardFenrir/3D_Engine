@@ -56,7 +56,7 @@ bool ModuleRenderExercise::Init()
 		 std::cout<<"Failed to locate uniforms in Init";
 		 return false;
 	 }
-	 App->GetModuleLoad()->LoadModel("models/BakerHouse/BakerHouse.gltf", shader_program);
+	 App->GetModuleLoad()->LoadModel("models/Duck/glTF/Duck.gltf", shader_program);
 	return true;
 }
 update_status ModuleRenderExercise::PreUpdate() 
