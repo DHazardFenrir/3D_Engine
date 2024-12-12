@@ -2,7 +2,8 @@
 #include "DirectXTex.h"
 #include "glew.h"
 #include <iostream>
-
+#include <locale>
+#include <codecvt>
 
 ModuleTexture::ModuleTexture()
 {
@@ -15,8 +16,7 @@ ModuleTexture::~ModuleTexture() {
 
 bool ModuleTexture::Init() {
    
-    LoadDDS(filePath, image);
-    texture = ProcessTexture(image);
+    
 	return true;
 }
 
@@ -39,9 +39,10 @@ bool ModuleTexture::CleanUp() {
 	return true;
 }
 
-void ModuleTexture::LoadDDS(std::wstring& filePath, DirectX::ScratchImage& img)
+void ModuleTexture::LoadDDS(const std::string& filePath, DirectX::ScratchImage& img)
 {
-    HRESULT hr = DirectX::LoadFromDDSFile(filePath.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, img);
+    std::wstring wideFileName = stringToWString(filePath);
+    HRESULT hr = DirectX::LoadFromDDSFile(wideFileName.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, img);
     const DirectX::TexMetadata& metadata = img.GetMetadata();
 
     if (FAILED(hr)) 
@@ -54,10 +55,11 @@ void ModuleTexture::LoadDDS(std::wstring& filePath, DirectX::ScratchImage& img)
     
 }
 
-void ModuleTexture::LoadTGA(std::wstring& filePath, DirectX::ScratchImage& img)
+void ModuleTexture::LoadTGA(const std::string& filePath, DirectX::ScratchImage& img)
 {
+    std::wstring wideFileName = stringToWString(filePath);
     std::cout << "Loading TGA..." << std::endl;
-    HRESULT hr = DirectX::LoadFromTGAFile(filePath.c_str(), nullptr, img);
+    HRESULT hr = DirectX::LoadFromTGAFile(wideFileName.c_str(), nullptr, img);
     const DirectX::TexMetadata& metadata = image.GetMetadata();
 
     if (FAILED(hr)) {
@@ -68,11 +70,11 @@ void ModuleTexture::LoadTGA(std::wstring& filePath, DirectX::ScratchImage& img)
     
 }
 
-void ModuleTexture::LoadWIC(std::wstring& filePath, DirectX::ScratchImage& img)
+void ModuleTexture::LoadWIC(const std::string& filePath, DirectX::ScratchImage& img)
 {
         DirectX::TexMetadata tempMetaData = img.GetMetadata();
-
-        HRESULT hr = DirectX::LoadFromWICFile(filePath.c_str(), DirectX::WIC_FLAGS_NONE, &tempMetaData, img);
+        std::wstring wideFileName = stringToWString(filePath);
+        HRESULT hr = DirectX::LoadFromWICFile(wideFileName.c_str(), DirectX::WIC_FLAGS_NONE, &tempMetaData, img);
 
         if (FAILED(hr)) {
             std::cerr << "Error loading image with WIC" << std::endl;
@@ -148,10 +150,27 @@ unsigned int ModuleTexture::ProcessTexture(const DirectX::ScratchImage& image)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+    if (textureID == 0) {
+        std::cerr << "Texture loading failed, texture ID is 0!" << std::endl;
+    }
     return textureID;
+}
+
+unsigned int ModuleTexture::Load(const std::string& filePath)
+{
+    LoadDDS(filePath, image);
+    return ProcessTexture(image);
+}
+
+std::wstring ModuleTexture::stringToWString(const std::string& str)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(str);
+   
 }
 
 void ModuleTexture::RenderUI()
 {
 }
+
+

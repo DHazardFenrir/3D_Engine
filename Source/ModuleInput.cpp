@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "ModuleOpenGL.h"
 #include "ModuleWindow.h"
+#include "ModuleEditorCamera.h"
 #include "SDL.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -53,8 +54,15 @@ update_status ModuleInput::Update()
             case SDL_QUIT:
                 return UPDATE_STOP;
             case SDL_WINDOWEVENT:
-                if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-                    App->GetOpenGL()->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
+                if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) 
+                {
+                    /* App->GetOpenGL()->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
+                   App->GetWindow()->SetWindowSize(sdlEvent.window.data1, sdlEvent.window.data2);*/
+                    int width = sdlEvent.window.data1;
+                    int height = sdlEvent.window.data2;
+                    App->GetCamera()->ResizeWindow(width, height);
+                }
+                  
                 if (SDL_GetWindowFlags(App->GetWindow()->GetSDLWindow()) & SDL_WINDOW_MINIMIZED)
                 {
                     SDL_Delay(10);

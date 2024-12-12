@@ -10,10 +10,11 @@
 #include "debugdraw.h"
 #include "ModuleDebugDraw.h"
 #include "MathGeoLib.h"
-#include "Matx4x4.h";
 #include "ModuleWindow.h"
+#include "ModuleLoadModel.h"
 #include "Math/float3.h"
 #include <SDL.h>
+#include "Mesh.h"
 
 
 
@@ -31,9 +32,7 @@ bool ModuleRenderExercise::Init()
 {
     
   
-	vbo = CreateTriangleVBO();
-    vao = CreateVAO();
-    ebo = CreateEBO();
+
     
 	 vertex_shader_source = App->GetProgram()->LoadShaderSource("Shaders/default_vertex.glsl");
 	 fragment_shader_source = App->GetProgram()->LoadShaderSource("Shaders/default_fragment.glsl");
@@ -57,7 +56,7 @@ bool ModuleRenderExercise::Init()
 		 std::cout<<"Failed to locate uniforms in Init";
 		 return false;
 	 }
-	
+	 App->GetModuleLoad()->LoadModel("models/BakerHouse/BakerHouse.gltf", shader_program);
 	return true;
 }
 update_status ModuleRenderExercise::PreUpdate() 
@@ -94,64 +93,35 @@ bool ModuleRenderExercise::CleanUp()
 void ModuleRenderExercise::RenderVBO()
 {
 
-    // Frustum Config
-   
-    int width, height;
+	int width, height;
+	SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
+	float4x4 view = App->GetCamera()->GetViewMatrix();
+	float4x4 projection = App->GetCamera()->GetProjectionMatrix();
+	float4x4 model = App->GetModuleLoad()->GetNewModelMatrix();
+	
+	std::cout << "model matrix " << model << std::endl;
+	
+	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
+	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
+	App->GetDebugDraw()->Draw(view, projection, width, height);
 
-    SDL_GetWindowSize(App->GetWindow()->GetSDLWindow(), &width, &height);
-    float aspectRatio = App->GetOpenGL()->GetAspectRatio();
-    //       
-
-    //     //Configuration of model matrix
-
-        float4x4 model = float4x4::FromTRS(
-            float3(0.0f, 0.0f, 2.0f),    // Moving the triangle behind on x.
-            float4x4::RotateZ(0),            // No rotation
-            float3(1.0f, 1.0f, 1.0f)      // Normal scale
-        );
-
-    //   /*  View and Projection Matrix */
-        float4x4 view = App->GetCamera()->GetViewMatrix();
-        //App->GetCamera()->LookAt(5.0f, 1.0, 5.0);
-    //    //float4x4 view = float4x4::LookAt(frustum.Pos(), float3(0.0, 0.0, 0.0), frustum.Front(), frustum.Up(), float3::unitY);
-
-        float4x4 projection = App->GetCamera()->GetProjectionMatrix();
-
-    //  
-
-    //    // Configure of viewport
-    //   
-    //   
-
-    //    // Render axis and grid
-        dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
-        dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
-        App->GetDebugDraw()->Draw(view, projection, width, height);
-
-        // Render triangle
-        glUseProgram(shader_program);
-        
-      
-
-        // Sending uniform matrix to shaders. 
-        glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"), 1, GL_TRUE , &model[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), 1, GL_TRUE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shader_program, "proj"), 1, GL_TRUE, &projection[0][0]);
-        glUniform1i(glGetUniformLocation(shader_program, "mytexture"), 0);
-        glActiveTexture(GL_TEXTURE0);
-       
-       
-        // Draw Triangle
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        
-
-        // Check for errors 
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR) {
-            std::cout << "OpenGL Error:" << error << std::endl;
-        }
+	
+	glUseProgram(shader_program);
+	glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"), 1, GL_TRUE, &model[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), 1, GL_TRUE, &view[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader_program, "proj"), 1, GL_TRUE, &projection[0][0]);
+	
+	
+	for (int i = 0; i < App->GetModuleLoad()->meshes.size(); ++i)
+	{
+		App->GetModuleLoad()->meshes[i]->Render(shader_program, App->GetModuleLoad()->textures);
+	}
+	
+	
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR) {
+		std::cout << "OpenGL Error:" << error << std::endl;
+	}
 
         
 

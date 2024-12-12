@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleEditorCamera.h"
 
 ModuleWindow::ModuleWindow()
 {
@@ -28,7 +29,7 @@ bool ModuleWindow::Init()
 		//Create window
 		int width = SCREEN_WIDTH;
 		int height = SCREEN_HEIGHT;
-		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL;
+		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
 		if(FULLSCREEN == true)
 		{
@@ -69,4 +70,16 @@ bool ModuleWindow::CleanUp()
 	SDL_Quit();
 	return true;
 }
+
+void ModuleWindow::SetFullScreen(bool fullscreen)
+{
+	if (fullscreen) {
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP); 
+	}
+	else {
+		SDL_SetWindowFullscreen(window, 0); 
+	}
+}
+
+
 

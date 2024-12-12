@@ -150,8 +150,8 @@ bool ModuleEditorCamera::Init() {
 	currentFrustum->SetUp(float3::unitY);
 
 
-	currentFrustum->SetViewPlaneDistances(0.1f, 1000.0f);
-	currentFrustum->SetVerticalFovAndAspectRatio(math::pi / 4.0f, aspectRatio);
+	currentFrustum->SetViewPlaneDistances(nearPlane, farPlane);
+	currentFrustum->SetVerticalFovAndAspectRatio(verticalFov, aspectRatio);
 	return true;
 }
 
@@ -214,6 +214,12 @@ float4x4 ModuleEditorCamera::GetProjectionMatrix() const {
 	return currentFrustum->ProjectionMatrix();
 }
 
+void ModuleEditorCamera::UpdateProjectionMatrix(float aspectRatio)
+{
+	 currentFrustum->SetVerticalFovAndAspectRatio(verticalFov, aspectRatio);
+}
+
+
 void ModuleEditorCamera::Zoom(float amount) 
 {
 	currentFrustum->SetPos(currentFrustum->Pos() + currentFrustum->Front().Normalized()* amount);
@@ -241,6 +247,7 @@ void ModuleEditorCamera::SetFov(float fov)
 void ModuleEditorCamera::SetAspectRatio(float aspectRatio)
 {
 	currentFrustum->SetVerticalFovAndAspectRatio(currentFrustum->VerticalFov(), aspectRatio);
+	UpdateProjectionMatrix(aspectRatio);
 }
 
 void ModuleEditorCamera::SetPlaneDistance(float near, float far)
@@ -271,7 +278,11 @@ void ModuleEditorCamera::SetRotation(const Quat rotationQuat) {
 
 void ModuleEditorCamera::ResizeWindow(int width, int height)
 {
-	SetAspectRatio((float)width / (float(height)));
+	
+	float aspectRatio = (float)width / (float)height;
+	SetAspectRatio(aspectRatio);
+	
+	
 }
 
 void ModuleEditorCamera::LookAt(float x, float y, float z)

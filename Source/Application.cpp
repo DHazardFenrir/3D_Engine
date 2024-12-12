@@ -9,6 +9,7 @@
 #include "ModuleEditor.h"
 #include "ModuleTexture.h"
 #include "ModuleHardware.h"
+#include "ModuleLoadModel.h"
 
 #include "ModuleRenderExercise.h"
 
@@ -23,6 +24,7 @@ Application::Application()
 	modules.push_back(camera = new ModuleEditorCamera());
 	modules.push_back(draw = new ModuleDebugDraw());
 	modules.push_back(program = new ModuleProgram());
+	modules.push_back(mesh = new ModuleLoadModel());
 	modules.push_back(text = new ModuleTexture());
 	modules.push_back(exercise = new ModuleRenderExercise());
 	modules.push_back(info = new ModuleHardware());

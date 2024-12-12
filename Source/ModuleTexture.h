@@ -10,10 +10,12 @@ public:
 	~ModuleTexture();
 
 	bool Init();
-	void LoadDDS(std::wstring& filePath, DirectX::ScratchImage& img);
-	void LoadTGA(std::wstring& filePath, DirectX::ScratchImage& img);
-	void LoadWIC(std::wstring& filePath, DirectX::ScratchImage& img);
+	void LoadDDS(const std::string& filePath, DirectX::ScratchImage& img);
+	void LoadTGA(const std::string& filePath, DirectX::ScratchImage& img);
+	void LoadWIC(const std::string& filePath, DirectX::ScratchImage& img);
 	unsigned int ProcessTexture(const DirectX::ScratchImage& image);
+	unsigned int Load(const std::string&);
+	std::wstring stringToWString(const std::string& str);
 	void RenderUI() override;
 	unsigned int GetTexture();
 	update_status PreUpdate();
@@ -23,7 +25,7 @@ public:
 
 private:
 	DirectX::ScratchImage image;
-	std::wstring filePath = L"resources/Test-image-Baboon.ppm";
+	const std::string filePath = "resources/Test-image-Baboon.ppm";
 	unsigned int texture;
 	
 };

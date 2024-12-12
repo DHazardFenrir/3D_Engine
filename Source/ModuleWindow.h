@@ -5,6 +5,7 @@
 #include "SDL.h"
 
 class Application;
+class ModuleEditorCamera;
 
 class ModuleWindow : public Module
 {
@@ -22,6 +23,10 @@ public:
 	bool CleanUp();
 
 	SDL_Window* GetSDLWindow() { return window; }
+
+	void SetFullScreen(bool fullscreen);
+
+	
 
 public:
 	//The window we'll be rendering to

@@ -195,9 +195,6 @@
     <ClCompile Include="extern\MathGeoLib\include\Math\grisu3.c">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Matx4x4.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ModuleTexture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -205,7 +202,8 @@
     <ClCompile Include="extern\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\ModuleHardware.cpp" />
-    <ClCompile Include="ModuleLoadModel.cpp" />
+    <ClCompile Include="Source\ModuleLoadModel.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\debugdraw.h">
@@ -757,15 +755,15 @@
     <ClInclude Include="Source\ModuleEditorCamera.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Matx4x4.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\ModuleTexture.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\ModuleEditor.h" />
     <ClInclude Include="Source\ModuleHardware.h" />
-    <ClInclude Include="ModuleLoadModel.h" />
+    <ClInclude Include="Source\ModuleLoadModel.h" />
+    <ClInclude Include="Source\Mesh.h" />
+    <ClInclude Include="extern\tinygltf\json.hpp" />
+    <ClInclude Include="extern\tinygltf\tiny_gltf.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="extern\SDL\include\SDL_config.h.cmake">

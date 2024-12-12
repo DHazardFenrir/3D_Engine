@@ -15,6 +15,7 @@ class ModuleProgram;
 class ModuleEditor;
 class ModuleTexture;
 class ModuleHardware;
+class ModuleLoadModel;
 class Application
 {
 public:
@@ -36,6 +37,7 @@ public:
     ModuleEditor* GetGUI() { return  GUI; }
     ModuleTexture* GetTxt() { return text; }
     ModuleHardware* GetInfo() { return info; }
+    ModuleLoadModel* GetModuleLoad() { return mesh; }
     void RequestBrowser(const std::string& url);
 
 private:
@@ -50,6 +52,7 @@ private:
     ModuleEditor* GUI = nullptr;
     ModuleTexture* text = nullptr;
     ModuleHardware* info = nullptr;
+    ModuleLoadModel* mesh = nullptr;
     std::list<Module*> modules;
 
 };

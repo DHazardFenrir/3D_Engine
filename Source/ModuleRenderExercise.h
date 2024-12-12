@@ -1,4 +1,4 @@
-﻿#pragma once
+﻿
 #include "Module.h"
 #include "Globals.h"
 #include "MathGeoLib.h"

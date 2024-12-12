@@ -28,6 +28,7 @@ public:
 	void LookAt(float x, float y, float z);
 	void Rotate(const float3x3& rotationMatrix);
 	float4x4 GetProjectionMatrix() const;
+	void UpdateProjectionMatrix(float aspectRatio);
 	float4x4 GetViewMatrix() const;
 	update_status PreUpdate();
 	update_status Update();
@@ -54,5 +55,8 @@ private:
 	vec cameraTarget;
 	vec cameraUp;
 	vec cameraRight;
+	float nearPlane = 0.1f;
+	float farPlane = 100.0f;
+	float verticalFov = math::pi / 4.0f;
 };
 

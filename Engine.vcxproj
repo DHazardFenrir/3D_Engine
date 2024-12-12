@@ -68,12 +68,12 @@
     <ClCompile Include="extern\MathGeoLib\include\Math\SSEMath.cpp" />
     <ClCompile Include="extern\MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="extern\MathGeoLib\include\Time\Clock.cpp" />
-    <ClCompile Include="ModuleLoadModel.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\ModuleLoadModel.cpp" />
     <ClCompile Include="Source\ModuleHardware.cpp" />
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\ModuleEditor.cpp" />
     <ClCompile Include="Source\ModuleTexture.cpp" />
-    <ClCompile Include="Source\Matx4x4.cpp" />
     <ClCompile Include="Source\ModuleEditorCamera.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -255,11 +255,13 @@
     <ClInclude Include="extern\SDL\include\SDL_version.h" />
     <ClInclude Include="extern\SDL\include\SDL_video.h" />
     <ClInclude Include="extern\SDL\include\SDL_vulkan.h" />
-    <ClInclude Include="ModuleLoadModel.h" />
+    <ClInclude Include="extern\tinygltf\json.hpp" />
+    <ClInclude Include="extern\tinygltf\tiny_gltf.h" />
+    <ClInclude Include="Source\Mesh.h" />
+    <ClInclude Include="Source\ModuleLoadModel.h" />
     <ClInclude Include="Source\ModuleHardware.h" />
     <ClInclude Include="Source\ModuleEditor.h" />
     <ClInclude Include="Source\ModuleTexture.h" />
-    <ClInclude Include="Source\Matx4x4.h" />
     <ClInclude Include="Source\ModuleEditorCamera.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\debugdraw.h" />
@@ -376,8 +378,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\dev\3D_Engine\extern\DirectXTex;C:\dev\3D_Engine\extern\imgui;C:\dev\3D_Engine\extern\MathGeoLib\include;C:\dev\3D_Engine\extern\glew-2.1.0\include\GL;C:\dev\3D_Engine\extern\SDL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\extern\DirectXTex;.\extern\imgui;.\extern\MathGeoLib\include;.\extern\glew-2.1.0\include\GL;.\extern\SDL\include;.\extern\tinygltf</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
