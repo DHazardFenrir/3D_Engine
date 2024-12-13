@@ -1222,8 +1222,8 @@ static float            NavUpdatePageUpPageDown();
 static inline void      NavUpdateAnyRequestFlag();
 static void             NavUpdateCreateWrappingRequest();
 static void             NavEndFrame();
-static bool             NavScoreItem(ImGuiNavItemData* result);
-static void             NavApplyItemToResult(ImGuiNavItemData* result);
+static bool             NavScoreItem(ImGuiNavItemData* loadedTexture);
+static void             NavApplyItemToResult(ImGuiNavItemData* loadedTexture);
 static void             NavProcessItem();
 static void             NavProcessItemForTabbingRequest(ImGuiID id, ImGuiItemFlags item_flags, ImGuiNavMoveFlags move_flags);
 static ImGuiInputSource NavCalcPreferredRefPosSource();
@@ -8746,12 +8746,12 @@ bool ImGui::IsWindowHovered(ImGuiHoveredFlags flags)
         if (flags & ImGuiHoveredFlags_RootWindow)
             cur_window = GetCombinedRootWindow(cur_window, popup_hierarchy, dock_hierarchy);
 
-        bool result;
+        bool loadedTexture;
         if (flags & ImGuiHoveredFlags_ChildWindows)
-            result = IsWindowChildOf(ref_window, cur_window, popup_hierarchy, dock_hierarchy);
+            loadedTexture = IsWindowChildOf(ref_window, cur_window, popup_hierarchy, dock_hierarchy);
         else
-            result = (ref_window == cur_window);
-        if (!result)
+            loadedTexture = (ref_window == cur_window);
+        if (!loadedTexture)
             return false;
     }
 
@@ -12894,7 +12894,7 @@ static float inline NavScoreItemDistInterval(float cand_min, float cand_max, flo
 }
 
 // Scoring function for keyboard/gamepad directional navigation. Based on https://gist.github.com/rygorous/6981057
-static bool ImGui::NavScoreItem(ImGuiNavItemData* result)
+static bool ImGui::NavScoreItem(ImGuiNavItemData* loadedTexture)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -12994,21 +12994,21 @@ static bool ImGui::NavScoreItem(ImGuiNavItemData* result)
     if (quadrant == move_dir)
     {
         // Does it beat the current best candidate?
-        if (dist_box < result->DistBox)
+        if (dist_box < loadedTexture->DistBox)
         {
-            result->DistBox = dist_box;
-            result->DistCenter = dist_center;
+            loadedTexture->DistBox = dist_box;
+            loadedTexture->DistCenter = dist_center;
             return true;
         }
-        if (dist_box == result->DistBox)
+        if (dist_box == loadedTexture->DistBox)
         {
             // Try using distance between center points to break ties
-            if (dist_center < result->DistCenter)
+            if (dist_center < loadedTexture->DistCenter)
             {
-                result->DistCenter = dist_center;
+                loadedTexture->DistCenter = dist_center;
                 new_best = true;
             }
-            else if (dist_center == result->DistCenter)
+            else if (dist_center == loadedTexture->DistCenter)
             {
                 // Still tied! we need to be extra-careful to make sure everything gets linked properly. We consistently break ties by symbolically moving "later" items
                 // (with higher index) to the right/downwards by an infinitesimal amount since we the current "best" button already (so it must have a lower index),
@@ -13024,30 +13024,30 @@ static bool ImGui::NavScoreItem(ImGuiNavItemData* result)
     // This is just to avoid buttons having no links in a particular direction when there's a suitable neighbor. you get good graphs without this too.
     // 2017/09/29: FIXME: This now currently only enabled inside menu bars, ideally we'd disable it everywhere. Menus in particular need to catch failure. For general navigation it feels awkward.
     // Disabling it may lead to disconnected graphs when nodes are very spaced out on different axis. Perhaps consider offering this as an option?
-    if (result->DistBox == FLT_MAX && dist_axial < result->DistAxial)  // Check axial match
+    if (loadedTexture->DistBox == FLT_MAX && dist_axial < loadedTexture->DistAxial)  // Check axial match
         if (g.NavLayer == ImGuiNavLayer_Menu && !(g.NavWindow->Flags & ImGuiWindowFlags_ChildMenu))
             if ((move_dir == ImGuiDir_Left && dax < 0.0f) || (move_dir == ImGuiDir_Right && dax > 0.0f) || (move_dir == ImGuiDir_Up && day < 0.0f) || (move_dir == ImGuiDir_Down && day > 0.0f))
             {
-                result->DistAxial = dist_axial;
+                loadedTexture->DistAxial = dist_axial;
                 new_best = true;
             }
 
     return new_best;
 }
 
-static void ImGui::NavApplyItemToResult(ImGuiNavItemData* result)
+static void ImGui::NavApplyItemToResult(ImGuiNavItemData* loadedTexture)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    result->Window = window;
-    result->ID = g.LastItemData.ID;
-    result->FocusScopeId = g.CurrentFocusScopeId;
-    result->ItemFlags = g.LastItemData.ItemFlags;
-    result->RectRel = WindowRectAbsToRel(window, g.LastItemData.NavRect);
-    if (result->ItemFlags & ImGuiItemFlags_HasSelectionUserData)
+    loadedTexture->Window = window;
+    loadedTexture->ID = g.LastItemData.ID;
+    loadedTexture->FocusScopeId = g.CurrentFocusScopeId;
+    loadedTexture->ItemFlags = g.LastItemData.ItemFlags;
+    loadedTexture->RectRel = WindowRectAbsToRel(window, g.LastItemData.NavRect);
+    if (loadedTexture->ItemFlags & ImGuiItemFlags_HasSelectionUserData)
     {
         IM_ASSERT(g.NextItemData.SelectionUserData != ImGuiSelectionUserData_Invalid);
-        result->SelectionUserData = g.NextItemData.SelectionUserData; // INTENTIONAL: At this point this field is not cleared in NextItemData. Avoid unnecessary copy to LastItemData.
+        loadedTexture->SelectionUserData = g.NextItemData.SelectionUserData; // INTENTIONAL: At this point this field is not cleared in NextItemData. Avoid unnecessary copy to LastItemData.
     }
 }
 
@@ -13106,9 +13106,9 @@ static void ImGui::NavProcessItem()
             }
             else if (g.NavId != id || (g.NavMoveFlags & ImGuiNavMoveFlags_AllowCurrentNavId))
             {
-                ImGuiNavItemData* result = (window == g.NavWindow) ? &g.NavMoveResultLocal : &g.NavMoveResultOther;
-                if (NavScoreItem(result))
-                    NavApplyItemToResult(result);
+                ImGuiNavItemData* loadedTexture = (window == g.NavWindow) ? &g.NavMoveResultLocal : &g.NavMoveResultOther;
+                if (NavScoreItem(loadedTexture))
+                    NavApplyItemToResult(loadedTexture);
 
                 // Features like PageUp/PageDown need to maintain a separate score for the visible set of items.
                 const float VISIBLE_RATIO = 0.70f;
@@ -13167,14 +13167,14 @@ void ImGui::NavProcessItemForTabbingRequest(ImGuiID id, ImGuiItemFlags item_flag
         can_stop = (item_flags & ImGuiItemFlags_NoTabStop) == 0 && ((g.IO.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) || (item_flags & ImGuiItemFlags_Inputable));
 
     // Always store in NavMoveResultLocal (unlike directional request which uses NavMoveResultOther on sibling/flattened windows)
-    ImGuiNavItemData* result = &g.NavMoveResultLocal;
+    ImGuiNavItemData* loadedTexture = &g.NavMoveResultLocal;
     if (g.NavTabbingDir == +1)
     {
         // Tab Forward or SetKeyboardFocusHere() with >= 0
         if (can_stop && g.NavTabbingResultFirst.ID == 0)
             NavApplyItemToResult(&g.NavTabbingResultFirst);
         if (can_stop && g.NavTabbingCounter > 0 && --g.NavTabbingCounter == 0)
-            NavMoveRequestResolveWithLastItem(result);
+            NavMoveRequestResolveWithLastItem(loadedTexture);
         else if (g.NavId == id)
             g.NavTabbingCounter = 1;
     }
@@ -13183,7 +13183,7 @@ void ImGui::NavProcessItemForTabbingRequest(ImGuiID id, ImGuiItemFlags item_flag
         // Tab Backward
         if (g.NavId == id)
         {
-            if (result->ID)
+            if (loadedTexture->ID)
             {
                 g.NavMoveScoringItems = false;
                 NavUpdateAnyRequestFlag();
@@ -13192,13 +13192,13 @@ void ImGui::NavProcessItemForTabbingRequest(ImGuiID id, ImGuiItemFlags item_flag
         else if (can_stop)
         {
             // Keep applying until reaching NavId
-            NavApplyItemToResult(result);
+            NavApplyItemToResult(loadedTexture);
         }
     }
     else if (g.NavTabbingDir == 0)
     {
         if (can_stop && g.NavId == id)
-            NavMoveRequestResolveWithLastItem(result);
+            NavMoveRequestResolveWithLastItem(loadedTexture);
         if (can_stop && g.NavTabbingResultFirst.ID == 0) // Tab init
             NavApplyItemToResult(&g.NavTabbingResultFirst);
     }
@@ -13236,23 +13236,23 @@ void ImGui::NavMoveRequestSubmit(ImGuiDir move_dir, ImGuiDir clip_dir, ImGuiNavM
     NavUpdateAnyRequestFlag();
 }
 
-void ImGui::NavMoveRequestResolveWithLastItem(ImGuiNavItemData* result)
+void ImGui::NavMoveRequestResolveWithLastItem(ImGuiNavItemData* loadedTexture)
 {
     ImGuiContext& g = *GImGui;
     g.NavMoveScoringItems = false; // Ensure request doesn't need more processing
-    NavApplyItemToResult(result);
+    NavApplyItemToResult(loadedTexture);
     NavUpdateAnyRequestFlag();
 }
 
 // Called by TreePop() to implement ImGuiTreeNodeFlags_NavLeftJumpsBackHere
-void ImGui::NavMoveRequestResolveWithPastTreeNode(ImGuiNavItemData* result, ImGuiTreeNodeStackData* tree_node_data)
+void ImGui::NavMoveRequestResolveWithPastTreeNode(ImGuiNavItemData* loadedTexture, ImGuiTreeNodeStackData* tree_node_data)
 {
     ImGuiContext& g = *GImGui;
     g.NavMoveScoringItems = false;
     g.LastItemData.ID = tree_node_data->ID;
     g.LastItemData.ItemFlags = tree_node_data->ItemFlags & ~ImGuiItemFlags_HasSelectionUserData; // Losing SelectionUserData, recovered next-frame (cheaper).
     g.LastItemData.NavRect = tree_node_data->NavRect;
-    NavApplyItemToResult(result); // Result this instead of implementing a NavApplyPastTreeNodeToResult()
+    NavApplyItemToResult(loadedTexture); // Result this instead of implementing a NavApplyPastTreeNodeToResult()
     NavClearPreferredPosForAxis(ImGuiAxis_Y);
     NavUpdateAnyRequestFlag();
 }
@@ -13631,24 +13631,24 @@ void ImGui::NavInitRequestApplyResult()
     if (!g.NavWindow)
         return;
 
-    ImGuiNavItemData* result = &g.NavInitResult;
-    if (g.NavId != result->ID)
+    ImGuiNavItemData* loadedTexture = &g.NavInitResult;
+    if (g.NavId != loadedTexture->ID)
     {
         g.NavJustMovedFromFocusScopeId = g.NavFocusScopeId;
-        g.NavJustMovedToId = result->ID;
-        g.NavJustMovedToFocusScopeId = result->FocusScopeId;
+        g.NavJustMovedToId = loadedTexture->ID;
+        g.NavJustMovedToFocusScopeId = loadedTexture->FocusScopeId;
         g.NavJustMovedToKeyMods = 0;
         g.NavJustMovedToIsTabbing = false;
-        g.NavJustMovedToHasSelectionData = (result->ItemFlags & ImGuiItemFlags_HasSelectionUserData) != 0;
+        g.NavJustMovedToHasSelectionData = (loadedTexture->ItemFlags & ImGuiItemFlags_HasSelectionUserData) != 0;
     }
 
     // Apply result from previous navigation init request (will typically select the first item, unless SetItemDefaultFocus() has been called)
     // FIXME-NAV: On _NavFlattened windows, g.NavWindow will only be updated during subsequent frame. Not a problem currently.
-    IMGUI_DEBUG_LOG_NAV("[nav] NavInitRequest: ApplyResult: NavID 0x%08X in Layer %d Window \"%s\"\n", result->ID, g.NavLayer, g.NavWindow->Name);
-    SetNavID(result->ID, g.NavLayer, result->FocusScopeId, result->RectRel);
+    IMGUI_DEBUG_LOG_NAV("[nav] NavInitRequest: ApplyResult: NavID 0x%08X in Layer %d Window \"%s\"\n", loadedTexture->ID, g.NavLayer, g.NavWindow->Name);
+    SetNavID(loadedTexture->ID, g.NavLayer, loadedTexture->FocusScopeId, loadedTexture->RectRel);
     g.NavIdIsAlive = true; // Mark as alive from previous frame as we got a result
-    if (result->SelectionUserData != ImGuiSelectionUserData_Invalid)
-        g.NavLastValidSelectionUserData = result->SelectionUserData;
+    if (loadedTexture->SelectionUserData != ImGuiSelectionUserData_Invalid)
+        g.NavLastValidSelectionUserData = loadedTexture->SelectionUserData;
     if (g.NavInitRequestFromMove)
         SetNavCursorVisibleAfterMove();
 }
@@ -13832,16 +13832,16 @@ void ImGui::NavMoveRequestApplyResult()
 #endif
 
     // Select which result to use
-    ImGuiNavItemData* result = (g.NavMoveResultLocal.ID != 0) ? &g.NavMoveResultLocal : (g.NavMoveResultOther.ID != 0) ? &g.NavMoveResultOther : NULL;
+    ImGuiNavItemData* loadedTexture = (g.NavMoveResultLocal.ID != 0) ? &g.NavMoveResultLocal : (g.NavMoveResultOther.ID != 0) ? &g.NavMoveResultOther : NULL;
 
     // Tabbing forward wrap
-    if ((g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing) && result == NULL)
+    if ((g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing) && loadedTexture == NULL)
         if ((g.NavTabbingCounter == 1 || g.NavTabbingDir == 0) && g.NavTabbingResultFirst.ID)
-            result = &g.NavTabbingResultFirst;
+            loadedTexture = &g.NavTabbingResultFirst;
 
     // In a situation when there are no results but NavId != 0, re-enable the Navigation highlight (because g.NavId is not considered as a possible result)
     const ImGuiAxis axis = (g.NavMoveDir == ImGuiDir_Up || g.NavMoveDir == ImGuiDir_Down) ? ImGuiAxis_Y : ImGuiAxis_X;
-    if (result == NULL)
+    if (loadedTexture == NULL)
     {
         if (g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing)
             g.NavMoveFlags |= ImGuiNavMoveFlags_NoSetNavCursorVisible;
@@ -13855,77 +13855,77 @@ void ImGui::NavMoveRequestApplyResult()
     // PageUp/PageDown behavior first jumps to the bottom/top mostly visible item, _otherwise_ use the result from the previous/next page.
     if (g.NavMoveFlags & ImGuiNavMoveFlags_AlsoScoreVisibleSet)
         if (g.NavMoveResultLocalVisible.ID != 0 && g.NavMoveResultLocalVisible.ID != g.NavId)
-            result = &g.NavMoveResultLocalVisible;
+            loadedTexture = &g.NavMoveResultLocalVisible;
 
     // Maybe entering a flattened child from the outside? In this case solve the tie using the regular scoring rules.
-    if (result != &g.NavMoveResultOther && g.NavMoveResultOther.ID != 0 && g.NavMoveResultOther.Window->ParentWindow == g.NavWindow)
-        if ((g.NavMoveResultOther.DistBox < result->DistBox) || (g.NavMoveResultOther.DistBox == result->DistBox && g.NavMoveResultOther.DistCenter < result->DistCenter))
-            result = &g.NavMoveResultOther;
-    IM_ASSERT(g.NavWindow && result->Window);
+    if (loadedTexture != &g.NavMoveResultOther && g.NavMoveResultOther.ID != 0 && g.NavMoveResultOther.Window->ParentWindow == g.NavWindow)
+        if ((g.NavMoveResultOther.DistBox < loadedTexture->DistBox) || (g.NavMoveResultOther.DistBox == loadedTexture->DistBox && g.NavMoveResultOther.DistCenter < loadedTexture->DistCenter))
+            loadedTexture = &g.NavMoveResultOther;
+    IM_ASSERT(g.NavWindow && loadedTexture->Window);
 
     // Scroll to keep newly navigated item fully into view.
     if (g.NavLayer == ImGuiNavLayer_Main)
     {
-        ImRect rect_abs = WindowRectRelToAbs(result->Window, result->RectRel);
-        ScrollToRectEx(result->Window, rect_abs, g.NavMoveScrollFlags);
+        ImRect rect_abs = WindowRectRelToAbs(loadedTexture->Window, loadedTexture->RectRel);
+        ScrollToRectEx(loadedTexture->Window, rect_abs, g.NavMoveScrollFlags);
 
         if (g.NavMoveFlags & ImGuiNavMoveFlags_ScrollToEdgeY)
         {
             // FIXME: Should remove this? Or make more precise: use ScrollToRectEx() with edge?
-            float scroll_target = (g.NavMoveDir == ImGuiDir_Up) ? result->Window->ScrollMax.y : 0.0f;
-            SetScrollY(result->Window, scroll_target);
+            float scroll_target = (g.NavMoveDir == ImGuiDir_Up) ? loadedTexture->Window->ScrollMax.y : 0.0f;
+            SetScrollY(loadedTexture->Window, scroll_target);
         }
     }
 
-    if (g.NavWindow != result->Window)
+    if (g.NavWindow != loadedTexture->Window)
     {
-        IMGUI_DEBUG_LOG_FOCUS("[focus] NavMoveRequest: SetNavWindow(\"%s\")\n", result->Window->Name);
-        g.NavWindow = result->Window;
+        IMGUI_DEBUG_LOG_FOCUS("[focus] NavMoveRequest: SetNavWindow(\"%s\")\n", loadedTexture->Window->Name);
+        g.NavWindow = loadedTexture->Window;
         g.NavLastValidSelectionUserData = ImGuiSelectionUserData_Invalid;
     }
 
     // Clear active id unless requested not to
     // FIXME: ImGuiNavMoveFlags_NoClearActiveId is currently unused as we don't have a clear strategy to preserve active id after interaction,
     // so this is mostly provided as a gateway for further experiments (see #1418, #2890)
-    if (g.ActiveId != result->ID && (g.NavMoveFlags & ImGuiNavMoveFlags_NoClearActiveId) == 0)
+    if (g.ActiveId != loadedTexture->ID && (g.NavMoveFlags & ImGuiNavMoveFlags_NoClearActiveId) == 0)
         ClearActiveID();
 
     // Don't set NavJustMovedToId if just landed on the same spot (which may happen with ImGuiNavMoveFlags_AllowCurrentNavId)
     // PageUp/PageDown however sets always set NavJustMovedTo (vs Home/End which doesn't) mimicking Windows behavior.
-    if ((g.NavId != result->ID || (g.NavMoveFlags & ImGuiNavMoveFlags_IsPageMove)) && (g.NavMoveFlags & ImGuiNavMoveFlags_NoSelect) == 0)
+    if ((g.NavId != loadedTexture->ID || (g.NavMoveFlags & ImGuiNavMoveFlags_IsPageMove)) && (g.NavMoveFlags & ImGuiNavMoveFlags_NoSelect) == 0)
     {
         g.NavJustMovedFromFocusScopeId = g.NavFocusScopeId;
-        g.NavJustMovedToId = result->ID;
-        g.NavJustMovedToFocusScopeId = result->FocusScopeId;
+        g.NavJustMovedToId = loadedTexture->ID;
+        g.NavJustMovedToFocusScopeId = loadedTexture->FocusScopeId;
         g.NavJustMovedToKeyMods = g.NavMoveKeyMods;
         g.NavJustMovedToIsTabbing = (g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing) != 0;
-        g.NavJustMovedToHasSelectionData = (result->ItemFlags & ImGuiItemFlags_HasSelectionUserData) != 0;
+        g.NavJustMovedToHasSelectionData = (loadedTexture->ItemFlags & ImGuiItemFlags_HasSelectionUserData) != 0;
         //IMGUI_DEBUG_LOG_NAV("[nav] NavJustMovedFromFocusScopeId = 0x%08X, NavJustMovedToFocusScopeId = 0x%08X\n", g.NavJustMovedFromFocusScopeId, g.NavJustMovedToFocusScopeId);
     }
 
     // Apply new NavID/Focus
-    IMGUI_DEBUG_LOG_NAV("[nav] NavMoveRequest: result NavID 0x%08X in Layer %d Window \"%s\"\n", result->ID, g.NavLayer, g.NavWindow->Name);
+    IMGUI_DEBUG_LOG_NAV("[nav] NavMoveRequest: result NavID 0x%08X in Layer %d Window \"%s\"\n", loadedTexture->ID, g.NavLayer, g.NavWindow->Name);
     ImVec2 preferred_scoring_pos_rel = g.NavWindow->RootWindowForNav->NavPreferredScoringPosRel[g.NavLayer];
-    SetNavID(result->ID, g.NavLayer, result->FocusScopeId, result->RectRel);
-    if (result->SelectionUserData != ImGuiSelectionUserData_Invalid)
-        g.NavLastValidSelectionUserData = result->SelectionUserData;
+    SetNavID(loadedTexture->ID, g.NavLayer, loadedTexture->FocusScopeId, loadedTexture->RectRel);
+    if (loadedTexture->SelectionUserData != ImGuiSelectionUserData_Invalid)
+        g.NavLastValidSelectionUserData = loadedTexture->SelectionUserData;
 
     // Restore last preferred position for current axis
     // (storing in RootWindowForNav-> as the info is desirable at the beginning of a Move Request. In theory all storage should use RootWindowForNav..)
     if ((g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing) == 0)
     {
-        preferred_scoring_pos_rel[axis] = result->RectRel.GetCenter()[axis];
+        preferred_scoring_pos_rel[axis] = loadedTexture->RectRel.GetCenter()[axis];
         g.NavWindow->RootWindowForNav->NavPreferredScoringPosRel[g.NavLayer] = preferred_scoring_pos_rel;
     }
 
     // Tabbing: Activates Inputable, otherwise only Focus
-    if ((g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing) && (result->ItemFlags & ImGuiItemFlags_Inputable) == 0)
+    if ((g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing) && (loadedTexture->ItemFlags & ImGuiItemFlags_Inputable) == 0)
         g.NavMoveFlags &= ~ImGuiNavMoveFlags_Activate;
 
     // Activate
     if (g.NavMoveFlags & ImGuiNavMoveFlags_Activate)
     {
-        g.NavNextActivateId = result->ID;
+        g.NavNextActivateId = loadedTexture->ID;
         g.NavNextActivateFlags = ImGuiActivateFlags_None;
         if (g.NavMoveFlags & ImGuiNavMoveFlags_IsTabbing)
             g.NavNextActivateFlags |= ImGuiActivateFlags_PreferInput | ImGuiActivateFlags_TryToPreserveState | ImGuiActivateFlags_FromTabbing;

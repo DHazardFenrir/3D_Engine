@@ -97,19 +97,19 @@
     ],
     "images" : [
       {
-        "uri": "models/DamagedHelmet/glTF/Default_albedo.jpg"
+        "uri": "Default_albedo.jpg"
       },
       {
-        "uri": "models/DamagedHelmet/glTF/Default_metalRoughness.jpg"
+        "uri": "Default_metalRoughness.jpg"
       },
       {
-        "uri": "models/DamagedHelmet/glTF/Default_emissive.jpg"
+        "uri": "glTF/Default_emissive.jpg"
       },
       {
-        "uri": "models/DamagedHelmet/glTF/Default_AO.jpg"
+        "uri": "Default_AO.jpg"
       },
       {
-        "uri": "models/DamagedHelmet/glTF/Default_normal.jpg"
+        "uri": "Default_normal.jpg"
       }
     ],
     "materials" : [

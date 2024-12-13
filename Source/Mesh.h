@@ -18,6 +18,7 @@ public:
 	void LoadEBO(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
 	void Render(unsigned int program, const std::vector<unsigned>& textures);
 	void CreateVAO();
+	void CleanUp();
 
 
 	unsigned int VAO;

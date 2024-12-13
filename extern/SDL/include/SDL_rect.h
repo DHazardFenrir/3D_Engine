@@ -152,7 +152,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_HasIntersection(const SDL_Rect * A,
  */
 extern DECLSPEC SDL_bool SDLCALL SDL_IntersectRect(const SDL_Rect * A,
                                                    const SDL_Rect * B,
-                                                   SDL_Rect * result);
+                                                   SDL_Rect * loadedTexture);
 
 /**
  * Calculate the union of two rectangles.
@@ -164,7 +164,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_IntersectRect(const SDL_Rect * A,
  */
 extern DECLSPEC void SDLCALL SDL_UnionRect(const SDL_Rect * A,
                                            const SDL_Rect * B,
-                                           SDL_Rect * result);
+                                           SDL_Rect * loadedTexture);
 
 /**
  * Calculate a minimal rectangle enclosing a set of points.
@@ -184,7 +184,7 @@ extern DECLSPEC void SDLCALL SDL_UnionRect(const SDL_Rect * A,
 extern DECLSPEC SDL_bool SDLCALL SDL_EnclosePoints(const SDL_Point * points,
                                                    int count,
                                                    const SDL_Rect * clip,
-                                                   SDL_Rect * result);
+                                                   SDL_Rect * loadedTexture);
 
 /**
  * Calculate the intersection of a rectangle and line segment.

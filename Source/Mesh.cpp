@@ -150,3 +150,11 @@ void Mesh::CreateVAO()
 	glBindVertexArray(0);
 }
 
+void Mesh::CleanUp()
+{
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &TexVBO);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &EBO);
+}
+

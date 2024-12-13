@@ -543,10 +543,10 @@ float Frac(float x)
 	@return n! = n * (n-1) * (n-2) * ... * 1. */
 int Factorial(int n)
 {
-	int result = 1;
+	int loadedTexture = 1;
 	for(int i = 2; i <= n; i++)
-		result *= i;
-	return result;
+		loadedTexture *= i;
+	return loadedTexture;
 }
 
 /** @return Binomial coefficients with recursion, i.e. n choose k, C(n,k) or nCk. */

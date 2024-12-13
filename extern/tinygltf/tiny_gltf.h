@@ -2462,24 +2462,24 @@ inline unsigned char from_hex(unsigned char ch) {
 
 static const std::string urldecode(const std::string &str) {
   using namespace std;
-  string result;
+  string loadedTexture;
   string::size_type i;
   for (i = 0; i < str.size(); ++i) {
     if (str[i] == '+') {
-      result += ' ';
+      loadedTexture += ' ';
     } else if (str[i] == '%' && str.size() > i + 2) {
       const unsigned char ch1 =
           from_hex(static_cast<unsigned char>(str[i + 1]));
       const unsigned char ch2 =
           from_hex(static_cast<unsigned char>(str[i + 2]));
       const unsigned char ch = static_cast<unsigned char>((ch1 << 4) | ch2);
-      result += static_cast<char>(ch);
+      loadedTexture += static_cast<char>(ch);
       i += 2;
     } else {
-      result += str[i];
+      loadedTexture += str[i];
     }
   }
-  return result;
+  return loadedTexture;
 }
 
 }  // namespace dlib
@@ -2927,11 +2927,11 @@ bool FileExists(const std::string &abs_filename, void *) {
 #if defined(_MSC_VER) || defined(_LIBCPP_VERSION)
 
   // First check if a file is a directory.
-  DWORD result = GetFileAttributesW(UTF8ToWchar(abs_filename).c_str());
-  if (result == INVALID_FILE_ATTRIBUTES) {
+  DWORD loadedTexture = GetFileAttributesW(UTF8ToWchar(abs_filename).c_str());
+  if (loadedTexture == INVALID_FILE_ATTRIBUTES) {
     return false;
   }
-  if (result & FILE_ATTRIBUTE_DIRECTORY) {
+  if (loadedTexture & FILE_ATTRIBUTE_DIRECTORY) {
     return false;
   }
 

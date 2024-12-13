@@ -10,6 +10,9 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "glew.h"
+#include "ModuleTexture.h"
+#include "ModuleLoadModel.h"
+#include "ModuleRenderExercise.h"
 
 ModuleInput::ModuleInput()
 {}
@@ -119,6 +122,15 @@ update_status ModuleInput::Update()
                     std::cout << "Alt liberado" << std::endl;
                 }
                 break;
+            case SDL_DROPFILE: {
+               
+                dropped_filedir = sdlEvent.drop.file;
+                ProcessDropFile(dropped_filedir);
+                
+                
+                SDL_free(dropped_filedir);
+                break;
+            }
                 
                 
                
@@ -133,6 +145,28 @@ update_status ModuleInput::Update()
 
 
     return UPDATE_CONTINUE;
+}
+
+void ModuleInput::ProcessDropFile(const char* dropFile)
+{
+    const char* result = strrchr(dropped_filedir, '.');
+
+    if (result != nullptr) {
+        if (IsTexture(result)) {
+            std::cout << "The file dropped was a texture" << std::endl;
+            LoadNewTexture(dropped_filedir); 
+        }
+        else if (strcmp(result, ".gltf") == 0) {
+            std::cout << "The file dropped was an .gltf" << std::endl;
+            LoadNewModel(dropped_filedir); 
+        }
+        else {
+            std::cout << "No texture supported" << std::endl;
+        }
+    }
+    else {
+        std::cout << "No valid extension found!" << std::endl;
+    }
 }
 
 // Called before quitting
@@ -152,6 +186,16 @@ void ModuleInput::ResetMouse() {
     wheelPress = false;
 }
 
+bool ModuleInput::IsTexture(const char* extension)
+{
+    for (const std::string& ext : extensions) {
+        if (strcmp(extension, ext.c_str()) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool ModuleInput::HandleButtonMouse(SDL_Event sdlEvents) {
     bool right = sdlEvents.motion.state & SDL_BUTTON_RMASK;
     bool left = sdlEvents.motion.state & SDL_BUTTON_LMASK;
@@ -168,6 +212,19 @@ bool ModuleInput::HandleButtonMouse(SDL_Event sdlEvents) {
     }
   
     return false;
+}
+
+void ModuleInput::LoadNewModel(const char* fileName)
+{
+    App->GetModuleLoad()->LoadModel(fileName,App->GetRender()->GetProgram());
+}
+
+void ModuleInput::LoadNewTexture(const char* dir)
+{
+    unsigned int textureId = 0;
+    App->GetModuleLoad()->textures.clear();
+    textureId = App->GetTxt()->Load(dir);
+    App->GetModuleLoad()->textures.push_back(textureId); 
 }
 
 

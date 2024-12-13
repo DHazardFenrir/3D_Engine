@@ -17,12 +17,16 @@ public:
 	bool Init();
 	float GetMouseWheelMotion() const;
 	void ResetMouse();
+	bool IsTexture(const char* extension);
 	bool buttonLeft;
 	bool buttonRight;
 	bool HandleButtonMouse(SDL_Event sdlEvents);
-	
+	void LoadNewModel(const char* fileName);
+	void LoadNewTexture(const char* dir);
 	
 	update_status Update();
+
+	void ProcessDropFile(const char* dropFile);
 
 	bool CleanUp();
 	
@@ -33,7 +37,10 @@ private:
 	const Uint8 *keyboard = NULL;
 	const Uint32 *mouse = NULL;
 	float mouseWheel = 0;
-	
+	char* dropped_filedir;
+	std::vector<const char*> extensions = { ".png", ".ppm", ".jpg", ".tga", ".dds", "jpeg", ".bpm"};
+	char* result = nullptr;
+	char* test = nullptr;
 	bool mouseWarped = false;
 	
 };

@@ -30,7 +30,7 @@ struct HitInfo
 	};
 
 	/// Specifies the result of the intersection test.
-	HitResult result;
+	HitResult loadedTexture;
 
 	/// Stores the point of intersection.
 	float3 point;

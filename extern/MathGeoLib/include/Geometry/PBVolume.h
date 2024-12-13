@@ -69,7 +69,7 @@ public:
 			for the interpretation of the return values. */
 	CullTestResult InsideOrIntersects(const AABB &aabb) const
 	{
-		CullTestResult result = TestInside;
+		CullTestResult loadedTexture = TestInside;
 
 		for(int i = 0; i < N; ++i)
 		{
@@ -103,26 +103,26 @@ public:
 				return TestOutside; // The AABB is certainly outside this PBVolume.
 			a = p[i].SignedDistance(pPoint);
 			if (a >= 0.f)
-				result = TestNotContained; // At least one vertex is outside this PBVolume. The whole AABB can't possibly be contained in this PBVolume.
+				loadedTexture = TestNotContained; // At least one vertex is outside this PBVolume. The whole AABB can't possibly be contained in this PBVolume.
 		}
 
 		// We can return here either TestInside or TestNotContained, but it's possible that the AABB was outside the frustum, and we
 		// just failed to find a separating axis.
-		return result;
+		return loadedTexture;
 	}
 
 	CullTestResult InsideOrIntersects(const Sphere &sphere) const
 	{
-		CullTestResult result = TestInside;
+		CullTestResult loadedTexture = TestInside;
 		for(int i = 0; i < N; ++i)
 		{
 			float d = p[i].SignedDistance(sphere.pos);
 			if (d >= sphere.r)
 				return TestOutside;
 			else if (d >= -sphere.r)
-				result = TestNotContained;
+				loadedTexture = TestNotContained;
 		}
-		return result;
+		return loadedTexture;
 	}
 
 private:

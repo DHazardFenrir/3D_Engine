@@ -38,6 +38,7 @@ public:
     ModuleTexture* GetTxt() { return text; }
     ModuleHardware* GetInfo() { return info; }
     ModuleLoadModel* GetModuleLoad() { return mesh; }
+    ModuleRenderExercise* GetRender() { return exercise; }
     void RequestBrowser(const std::string& url);
 
 private:
@@ -53,6 +54,7 @@ private:
     ModuleTexture* text = nullptr;
     ModuleHardware* info = nullptr;
     ModuleLoadModel* mesh = nullptr;
+
     std::list<Module*> modules;
 
 };

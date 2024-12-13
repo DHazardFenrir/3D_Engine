@@ -56,7 +56,8 @@ bool ModuleRenderExercise::Init()
 		 std::cout<<"Failed to locate uniforms in Init";
 		 return false;
 	 }
-	 App->GetModuleLoad()->LoadModel("models/Duck/glTF/Duck.gltf", shader_program);
+	 App->GetModuleLoad()->LoadModel("models/DamagedHelmet/glTF/DamagedHelmet.gltf", shader_program);
+	
 	return true;
 }
 update_status ModuleRenderExercise::PreUpdate() 
@@ -99,7 +100,7 @@ void ModuleRenderExercise::RenderVBO()
 	float4x4 projection = App->GetCamera()->GetProjectionMatrix();
 	float4x4 model = App->GetModuleLoad()->GetNewModelMatrix();
 	
-	std::cout << "model matrix " << model << std::endl;
+	
 	
 	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
 	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
@@ -117,6 +118,7 @@ void ModuleRenderExercise::RenderVBO()
 		App->GetModuleLoad()->meshes[i]->Render(shader_program, App->GetModuleLoad()->textures);
 	}
 	
+	GetProgram();
 	
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR) {
@@ -130,6 +132,11 @@ void ModuleRenderExercise::RenderVBO()
 void ModuleRenderExercise::RenderTriangle() 
 {
     
+}
+
+unsigned int ModuleRenderExercise::GetProgram()
+{
+	return shader_program;
 }
 
 void ModuleRenderExercise::DestroyVBO(unsigned vbo) 
