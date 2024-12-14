@@ -11,6 +11,7 @@ ModuleWindow::ModuleWindow()
 // Destructor
 ModuleWindow::~ModuleWindow()
 {
+	
 }
 
 // Called before render is available

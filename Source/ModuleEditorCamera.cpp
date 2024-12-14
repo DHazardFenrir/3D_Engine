@@ -7,6 +7,7 @@
 #include "glew.h"
 #include "debugdraw.h"
 #include "ModuleDebugDraw.h"
+#include "ModuleLoadModel.h"
 #include "MathGeoLib.h"
 #include "ModuleWindow.h"
 #include "Math/float3.h"
@@ -99,16 +100,7 @@ void ModuleEditorCamera::RotateWithArrows() {
 	if (App->GetInput()->GetKey(SDL_SCANCODE_UP)) {
 		
 			float pitch = rotationSpeed * deltaTime;
-			//float3x3 rotationMatrix = float3x3::RotateX(pitch);
 			SetRotation(float3x3::RotateX(pitch));
-			/*currentFrustum->SetFront(rotationMatrix * currentFrustum->Front());
-			currentFrustum->SetUp(rotationMatrix * currentFrustum->Up());*/
-
-			
-		
-		
-		
-		
 	}
 
 	if(App->GetInput()->GetKey(SDL_SCANCODE_DOWN)) {
@@ -160,6 +152,13 @@ update_status ModuleEditorCamera::PreUpdate() {
 }
 
 update_status ModuleEditorCamera::Update() {
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	
+	if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+		return UPDATE_CONTINUE;
+	}
 	static uint64_t previousFrame = SDL_GetPerformanceCounter();
     uint64_t currentFrame = SDL_GetPerformanceCounter();
 
@@ -168,28 +167,41 @@ update_status ModuleEditorCamera::Update() {
 
     previousFrame = currentFrame;
 
-	TraslateWithKeys();
-	RotateWithArrows();
-	
-	
-	float mouseWheelMotion = App->GetInput()->GetMouseWheelMotion();
-	if (mouseWheelMotion != 0.0f && App->GetInput()->wheelPress)
+	if (App->GetInput()->GetKey(SDL_SCANCODE_F)) 
 	{
-		std::cout << mouseWheelMotion << std::endl;
-		Zoom(mouseWheelMotion * 0.5f);
-		
-		App->GetInput()->ResetMouse();
+		Focus();
 	}
-	
-	
-	if (App->GetInput()->buttonLeft) 
+
+	if (App->GetInput()->WarpMouse()) 
 	{
-		TraslatWithMouse(App->GetInput()->mouseX, App->GetInput()->mouseY);
+		TraslateWithKeys();
+		RotateWithArrows();
+
+		if (App->GetInput()->GetKey(SDL_SCANCODE_LALT))
+		{
+			Orbit(App->GetInput()->mouseX, App->GetInput()->mouseY, 10.0f);
+		}
+
+		float mouseWheelMotion = App->GetInput()->GetMouseWheelMotion();
+		if (mouseWheelMotion != 0.0f && App->GetInput()->wheelPress)
+		{
+			std::cout << mouseWheelMotion << std::endl;
+			Zoom(mouseWheelMotion * 0.5f);
+
+			App->GetInput()->ResetMouse();
+		}
+
+
+		if (App->GetInput()->buttonLeft)
+		{
+			TraslatWithMouse(App->GetInput()->mouseX, App->GetInput()->mouseY);
+		}
+		if (App->GetInput()->buttonRight) {
+			Pan(App->GetInput()->mouseX, App->GetInput()->mouseY);
+		}
+
 	}
-	if (App->GetInput()->buttonRight) {
-		Pan(App->GetInput()->mouseX, App->GetInput()->mouseY);
-	}
-		
+	
 		
 	
 	return UPDATE_CONTINUE;
@@ -250,9 +262,9 @@ void ModuleEditorCamera::SetAspectRatio(float aspectRatio)
 	UpdateProjectionMatrix(aspectRatio);
 }
 
-void ModuleEditorCamera::SetPlaneDistance(float near, float far)
+void ModuleEditorCamera::SetPlaneDistance(float nearPlane, float farPlane)
 {
-	currentFrustum->SetViewPlaneDistances(near, far);
+	currentFrustum->SetViewPlaneDistances(nearPlane, farPlane);
 }
 
 void ModuleEditorCamera::SetPosition(float x, float y, float z)
@@ -303,12 +315,38 @@ void ModuleEditorCamera::LookAt(float x, float y, float z)
 	
 
 }
+void ModuleEditorCamera::Orbit(float xrel, float yrel, float radius)
+{
+	if (!App->GetInput()->WarpMouse()) return; 
+	float yaw = -xrel * rotationOrbit * deltaTime;
+	float pitch = -yrel * rotationOrbit * deltaTime;
+
+	float3 modelPos = App->GetModuleLoad()->GetModelTranslation();
+	Quat yawRotation = Quat::RotateY(DegToRad(yaw));
+	Quat pitchRotation = Quat::RotateAxisAngle(currentFrustum->WorldRight(), DegToRad(pitch));
+
+	float3 direction = (currentFrustum->Pos() - modelPos).Normalized();
+	direction = yawRotation * pitchRotation * direction;
+
+	currentFrustum->SetPos(modelPos + direction * radius);
+	LookAt(modelPos.x, modelPos.y, modelPos.z);
+}
 void ModuleEditorCamera::Rotate(const float3x3& rotationMatrix)
 {
 	vec oldFront = currentFrustum->Front().Normalized();
 	vec oldUp = currentFrustum->Up().Normalized();
 	currentFrustum->SetFront(rotationMatrix * oldFront);
 	currentFrustum->SetUp(rotationMatrix * oldUp);
+}
+
+void ModuleEditorCamera::Focus()
+{
+	float3 modelPos = App->GetModuleLoad()->GetModelTranslation();
+	float3 direction = (currentFrustum->Pos() - modelPos).Normalized();
+
+	
+	currentFrustum->SetPos(modelPos + direction * focusDistance);
+	LookAt(modelPos.x, modelPos.y, modelPos.z);
 }
 
 

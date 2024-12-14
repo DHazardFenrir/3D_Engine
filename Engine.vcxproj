@@ -68,10 +68,10 @@
     <ClCompile Include="extern\MathGeoLib\include\Math\SSEMath.cpp" />
     <ClCompile Include="extern\MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="extern\MathGeoLib\include\Time\Clock.cpp" />
+    <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\ModuleLoadModel.cpp" />
     <ClCompile Include="Source\ModuleHardware.cpp" />
-    <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\ModuleEditor.cpp" />
     <ClCompile Include="Source\ModuleTexture.cpp" />
     <ClCompile Include="Source\ModuleEditorCamera.cpp" />
@@ -257,6 +257,7 @@
     <ClInclude Include="extern\SDL\include\SDL_vulkan.h" />
     <ClInclude Include="extern\tinygltf\json.hpp" />
     <ClInclude Include="extern\tinygltf\tiny_gltf.h" />
+    <ClInclude Include="Source\Logger.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\ModuleLoadModel.h" />
     <ClInclude Include="Source\ModuleHardware.h" />

@@ -6,6 +6,7 @@
 #include "SDL.h"
 #include "glew.h"
 #include "imgui.h"
+#include "Logger.h"
 ModuleOpenGL::ModuleOpenGL() : context(nullptr)
 {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);  // desired version
@@ -26,9 +27,9 @@ ModuleOpenGL::~ModuleOpenGL()
 // Called before render is available
 bool ModuleOpenGL::Init()
 {
-	std::cout<<"Creating Renderer context";
-    std::cout<<"Creating OpenGL context";
-
+	
+    App->GetLogger()->Log(LOGMessage, "Creating Renderer context");
+    App->GetLogger()->Log(LOGMessage, "Creating Opengl Context");
     // Create OpenGL context and assign it to the private context variable
     context = SDL_GL_CreateContext(App->GetWindow()->GetSDLWindow());
     if (context == nullptr)
@@ -43,16 +44,27 @@ bool ModuleOpenGL::Init()
     SDL_GL_SetSwapInterval(1);
     if (err != GLEW_OK)
     {
+       
         std::cout<<"Error initializing GLEW! %s\n", glewGetErrorString(err);
         return false;
     }
-    std::cout<<"Using Glew %s\n", glewGetString(GLEW_VERSION);
+    
+    std::ostringstream message;
+    std::ostringstream vendor;
+    std::ostringstream glRenderer;
+    std::ostringstream OpenGLVersion;
+    std::ostringstream glsl;
+    message << "Using Glew " << glewGetString(GLEW_VERSION);
+    vendor << "Vendor: %s\n" << glGetString(GL_VENDOR);
+    vendor <<"Renderer: %s\n" << glGetString(GL_RENDERER);
+    glRenderer <<"OpenGL version supported %s\n" << glGetString(GL_VERSION);
+    glsl<<"GLSL: %s\n" <<glGetString(GL_SHADING_LANGUAGE_VERSION);
+    App->GetLogger()->Log(LOGMessage, message.str());
+    App->GetLogger()->Log(LOGMessage, vendor.str());
+    App->GetLogger()->Log(LOGMessage, glRenderer.str());
+    App->GetLogger()->Log(LOGMessage, OpenGLVersion.str());
+    App->GetLogger()->Log(LOGMessage, glsl.str());
 
-    // Log OpenGL information
-    printf("Vendor: %s\n", glGetString(GL_VENDOR));
-    std::cout<<"Renderer: %s\n", glGetString(GL_RENDERER);
-    std::cout<<"OpenGL version supported %s\n", glGetString(GL_VERSION);
-    std::cout<<"GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION);
    
     glEnable(GL_DEPTH_TEST);    // Enable depth test
     glEnable(GL_CULL_FACE);     // Enable cull backward faces

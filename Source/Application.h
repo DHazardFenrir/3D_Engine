@@ -3,7 +3,7 @@
 #include<list>
 #include "Globals.h"
 #include "Module.h"
-
+#include "Logger.h"
 class ModuleOpenGL;
 class ModuleWindow;
 class ModuleTextures;
@@ -16,6 +16,7 @@ class ModuleEditor;
 class ModuleTexture;
 class ModuleHardware;
 class ModuleLoadModel;
+
 class Application
 {
 public:
@@ -39,6 +40,7 @@ public:
     ModuleHardware* GetInfo() { return info; }
     ModuleLoadModel* GetModuleLoad() { return mesh; }
     ModuleRenderExercise* GetRender() { return exercise; }
+    Logger* GetLogger() { return &logger; }
     void RequestBrowser(const std::string& url);
 
 private:
@@ -54,7 +56,7 @@ private:
     ModuleTexture* text = nullptr;
     ModuleHardware* info = nullptr;
     ModuleLoadModel* mesh = nullptr;
-
+    Logger logger;
     std::list<Module*> modules;
 
 };

@@ -20,13 +20,15 @@ public:
 	void Pan(int xrel, int yrel);
 	void SetFov(float fov);
 	void SetAspectRatio(float aspectRatio);
-	void SetPlaneDistance(float near, float far);
+	void SetPlaneDistance(float nearPlane, float farPlane);
 	void SetPosition(float x, float y, float z);
 	void SetRotation(const float3x3 rotationMtx);
 	void SetRotation(const Quat rotationMtx);
 	void ResizeWindow(int width, int height);
 	void LookAt(float x, float y, float z);
+	void Orbit(float xrel, float yrel, float radius);
 	void Rotate(const float3x3& rotationMatrix);
+	void Focus();
 	float4x4 GetProjectionMatrix() const;
 	void UpdateProjectionMatrix(float aspectRatio);
 	float4x4 GetViewMatrix() const;
@@ -43,7 +45,7 @@ public:
 private:
 	Frustum frustum = Frustum();
 	Frustum* currentFrustum = nullptr;
-	float cameraSpeed = 5.0f;
+	float cameraSpeed = 2.0f;
 	double deltaTime = 0;
 	double fps = 0;
 	Uint64 startFrame = 0;
@@ -58,5 +60,7 @@ private:
 	float nearPlane = 0.1f;
 	float farPlane = 100.0f;
 	float verticalFov = math::pi / 4.0f;
+	float rotationOrbit = 5.0f;
+	float focusDistance = 5.0f;
 };
 

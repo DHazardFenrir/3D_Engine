@@ -1,46 +1,45 @@
-#include <iostream>
-#include <ctime>
-#include <fstream>
-#include <sstream>
-#include <string>
-
-enum LogLevel {LOG, INFO, WARNING, ERROR, CRITICAL};
-
-class Logger {
-public:
-	Logger() 
-	{}
-
-	void Log(LogLevel level, const std::string& message) {
-		time_t now = time(0);
-		tm* timeInfo = localtime(&now);
-		char timestamp[20];
-		strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeInfo);
-		std::ostringstream logEntry;
-
-		logEntry << "[" << timestamp << "] " << levelToString(level) << " :: " << message << std::endl;
-
-		std::cout << logEntry.str();
+#include "Logger.h"
+#include "imgui.h"
 
 
-	}
-	~Logger(){}
+void Logger::Log(LogLevel level, const std::string& message) {
+    time_t now = time(0);
+    tm* timeInfo = localtime(&now);
+    char timestamp[20];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeInfo);
 
-private:
-	std::string levelToString(LogLevel level) {
-		switch (level) {
-		case LOG:
-			return "LOG";
-		case INFO:
-			return "INFO";
-		case WARNING:
-			return "WARNING";
-		case ERROR:
-			return "ERROR";
-		case CRITICAL:
-			return "CRITICAL";
-		default:
-			return "UNKNOWN";
-		}
-	}
-};
+    std::ostringstream logEntry;
+    logEntry << "[" << timestamp << "] " << levelToString(level) << " :: " << message;
+
+    std::string logMessage = logEntry.str();
+    logMessages.push_back(logMessage); 
+    std::cout << logMessage << std::endl; 
+}
+
+void Logger::LogConsole()
+{
+    if (ImGui::Begin("Console")) { 
+        const std::vector<std::string>& logs = GetLogs();
+
+        for (const std::string& log : logs) {
+            ImGui::TextUnformatted(log.c_str()); 
+        }
+
+        
+        if (ImGui::Button("Clear Logs")) {
+            const_cast<std::vector<std::string>&>(logs).clear(); 
+        }
+    }
+    ImGui::End();
+}
+
+std::string Logger::levelToString(LogLevel level) {
+    switch (level) {
+    case LOGMessage: return "LOG";
+    case INFO: return "INFO";
+    case WARNING: return "WARNING";
+    case LOGERROR: return "ERROR";
+    case CRITICAL: return "CRITICAL";
+    default: return "UNKNOWN";
+    }
+}

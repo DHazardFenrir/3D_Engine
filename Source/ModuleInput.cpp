@@ -30,13 +30,14 @@ bool ModuleInput::GetMouse(SDL_EventType mouseScan) {
 // Called before render is available
 bool ModuleInput::Init()
 {
-	std::cout<<"Init SDL input event system";
+	SDLInit <<"Init SDL input event system";
 	bool ret = true;
 	SDL_Init(0);
-
+    App->GetLogger()->Log(LOGMessage, SDLInit.str());
 	if(SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
-    std::cout<< "SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError();
+    SDLInit << "SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError();
+    App->GetLogger()->Log(LOGERROR, SDLInit.str());
 		ret = false;
 	}
 
@@ -153,26 +154,31 @@ void ModuleInput::ProcessDropFile(const char* dropFile)
 
     if (result != nullptr) {
         if (IsTexture(result)) {
-            std::cout << "The file dropped was a texture" << std::endl;
+            validTex << "The file dropped was a texture" << std::endl;
+            App->GetLogger()->Log(LOGMessage, validTex.str());
             LoadNewTexture(dropped_filedir); 
         }
         else if (strcmp(result, ".gltf") == 0) {
-            std::cout << "The file dropped was an .gltf" << std::endl;
+            fileDrop << "The file dropped was an .gltf" << std::endl;
+            App->GetLogger()->Log(LOGMessage, fileDrop.str());
             LoadNewModel(dropped_filedir); 
         }
         else {
-            std::cout << "No texture supported" << std::endl;
+            validTex << "No texture supported" << std::endl;
+            App->GetLogger()->Log(LOGMessage, validTex.str());
         }
     }
     else {
-        std::cout << "No valid extension found!" << std::endl;
+        validTex << "No valid extension found!" << std::endl;
+        App->GetLogger()->Log(LOGERROR, validTex.str());
     }
 }
 
 // Called before quitting
 bool ModuleInput::CleanUp()
 {
-	std::cout<<"Quitting SDL input event subsystem";
+	SDLBye<<"Quitting SDL input event subsystem";
+    App->GetLogger()->Log(LOGMessage, SDLBye.str());
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }
@@ -225,6 +231,26 @@ void ModuleInput::LoadNewTexture(const char* dir)
     App->GetModuleLoad()->textures.clear();
     textureId = App->GetTxt()->Load(dir);
     App->GetModuleLoad()->textures.push_back(textureId); 
+}
+
+bool ModuleInput::WarpMouse()
+{
+    int mouseX, mouseY;
+    SDL_GetGlobalMouseState(&mouseX, &mouseY);  
+
+    SDL_Window* window = App->GetWindow()->GetSDLWindow();
+    int windowX, windowY, windowWidth, windowHeight;
+
+    SDL_GetWindowPosition(window, &windowX, &windowY);
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+    
+    if (mouseX >= windowX && mouseX <= windowX + windowWidth &&
+        mouseY >= windowY && mouseY <= windowY + windowHeight)
+    {
+        return true; 
+    }
+    return false; 
 }
 
 

@@ -22,6 +22,7 @@ public:
 	std::vector<Mesh*> meshes;
 	std::string basePath;
 	float4x4 globalTransform;
-	
+	void RenderUI();
+	float3 GetModelTranslation();
 };
 

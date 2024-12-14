@@ -9,6 +9,7 @@
 #include "ModuleTexture.h"
 #include "SDL.h"
 #include "MathGeoLib.h"
+#include "imgui.h"
 
 
 ModuleLoadModel::ModuleLoadModel() 
@@ -27,10 +28,13 @@ void ModuleLoadModel::LoadModel(const char* fileName, unsigned int program)
     tinygltf::Model model;
     std::string error, warning;
     std::string path = fileName;
+    std::ostringstream errorMsg;
     GetBasePath(path);
     bool loadOk = gltfContext.LoadASCIIFromFile(&model, &error, &warning, fileName);
     if (!loadOk) {
-        printf("Error loading %s: %s\n", fileName, error.c_str());
+        errorMsg << "Error loading %s: %s\n" << fileName << error.c_str();
+        App->GetLogger()->Log(LOGERROR, errorMsg.str());
+        
     }
     else {
         LoadMaterials(model);
@@ -53,6 +57,8 @@ void ModuleLoadModel::LoadMaterials(const tinygltf::Model &srcModel)
     for (const auto& srcMaterial : srcModel.materials)
     {
         unsigned int textureId = 0;
+        std::ostringstream textPath;
+        std::ostringstream baseChain;
         if (srcMaterial.pbrMetallicRoughness.baseColorTexture.index >= 0)
         {
             const tinygltf::Texture& texture = srcModel.textures[srcMaterial.pbrMetallicRoughness.baseColorTexture.index];
@@ -61,14 +67,17 @@ void ModuleLoadModel::LoadMaterials(const tinygltf::Model &srcModel)
             if (lastSeparator != std::string::npos) {
                 std::string tempPath;
                 tempPath = basePath.substr(0, lastSeparator);  
-                std::cout << "Directory: " << basePath << std::endl; 
+                baseChain << "Directory: " << basePath;
+                App->GetLogger()->Log(LOGMessage, baseChain.str());
                 textureId = (App->GetTxt()->Load(basePath+ '\\' + image.uri));
-                std::cout << "Texture is: " << basePath + '\\'+ image.uri << std::endl;
+                textPath << "Texture is: " << basePath + '\\'+ image.uri << std::endl;
+                App->GetLogger()->Log(LOGMessage, textPath.str());
             }
             else 
             {
                 textureId = (App->GetTxt()->Load(basePath + '/' + image.uri));
-                std::cout << "Texture is: " << basePath + '/' + image.uri << std::endl;
+                textPath << "Texture is: " << basePath + '/' + image.uri << std::endl;
+                App->GetLogger()->Log(LOGMessage, textPath.str());
             }
             
         }
@@ -106,25 +115,30 @@ void ModuleLoadModel::ClearMeshes()
 
 void ModuleLoadModel::GetBasePath( std::string& fileName)
 {
+    std::ostringstream sucess;
     
     size_t lastSeparator = fileName.rfind('/');  
 
     if (lastSeparator != std::string::npos) {
-        basePath = fileName.substr(0, lastSeparator);  // Extrae la parte de la ruta
-        std::cout << "Directory: " << basePath << std::endl;  // Muestra solo la ruta
+        basePath = fileName.substr(0, lastSeparator);  
+        sucess << "Directory: " << basePath;
+        App->GetLogger()->Log(LOGMessage, sucess.str());
     }
     else {
-        std::cout << "No directory separator found!" << std::endl;
+        sucess << "No directory separator found!";
+        App->GetLogger()->Log(LOGERROR, sucess.str());
     }
 
    lastSeparator = fileName.rfind('\\');
 
    if (lastSeparator != std::string::npos) {
-       basePath = fileName.substr(0, lastSeparator);  // Extrae la parte de la ruta
-       std::cout << "Directory: " << basePath << std::endl;  // Muestra solo la ruta
+       basePath = fileName.substr(0, lastSeparator);  
+       sucess << "Directory: " << basePath;
+       App->GetLogger()->Log(LOGMessage, sucess.str());
    }
    else {
-       std::cout << "No directory separator found!" << std::endl;
+       sucess << "No directory separator found!";
+       App->GetLogger()->Log(LOGERROR, sucess.str());
    }
 }
 
@@ -218,6 +232,37 @@ void ModuleLoadModel::ProcessNode(const tinygltf::Model& model, int nodeIndex, u
 float4x4 ModuleLoadModel::GetNewModelMatrix()
 {
     return globalTransform;
+}
+
+void ModuleLoadModel::RenderUI()
+{
+   
+
+    if (ImGui::CollapsingHeader("Model Info"))
+    {
+        if (ImGui::BeginTabBar("Model "))
+        {
+            
+            if (ImGui::BeginTabItem("Model Display"))
+            {
+                ImGui::Text("Model Information:");
+                ImGui::Text("Total Materials: %lu", textures.size());
+                ImGui::Text("Model Path: %s", basePath.c_str());
+                ImGui::Text("Number of Meshes: %lu", meshes.size());
+
+                ImGui::EndTabItem();
+            }
+
+
+
+            ImGui::EndTabBar();
+        }
+    }
+}
+
+float3 ModuleLoadModel::GetModelTranslation()
+{
+    return globalTransform.TranslatePart();
 }
 
 

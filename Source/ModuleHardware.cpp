@@ -31,7 +31,7 @@ update_status ModuleHardware::Update()
 
    
        
-    
+    GetVRAM();
     
   
     return UPDATE_CONTINUE;
@@ -50,16 +50,22 @@ void ModuleHardware::GetGPUInfo()
     printf("Marca del GPU: %s\n", vendor);
 
    
+    
+}
+
+void ModuleHardware::GetVRAM()
+{
+    printf("VRAM total: %d KB\n", totalMemory);
+    printf("VRAM disponible: %d KB\n", freeMemory);
+    printf("VRAM utilizada: %d KB\n", totalMemory - freeMemory);
     if (glewIsExtensionSupported("GL_NVX_gpu_memory_info")) {
         glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemory);
         glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &freeMemory);
 
-        printf("VRAM total: %d KB\n", totalMemory);
-        printf("VRAM disponible: %d KB\n", freeMemory);
-        printf("VRAM utilizada: %d KB\n", totalMemory - freeMemory);
+       
     }
     else if (glewIsExtensionSupported("GL_ATI_meminfo")) {
-        
+
         glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, &texFreeMemory);
         printf("Memoria libre para texturas (AMD): %d KB\n", texFreeMemory);
     }
@@ -79,7 +85,7 @@ void ModuleHardware::RenderUI()
 	{
 		if (ImGui::BeginTabBar("System"))
 		{
-			// Pestaña "General Info"
+			
 			if (ImGui::BeginTabItem("System Info"))
 			{
 				ImGui::Text("GPU: %s\n", renderer);

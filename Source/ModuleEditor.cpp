@@ -8,16 +8,19 @@
 #include "ModuleOpenGL.h"
 #include "Application.h"
 #include "ModuleHardware.h"
+#include "ModuleTexture.h"
+#include "Logger.h"
 #include "Globals.h"
 #include <iostream>
 #include "glew.h"
+#include "ModuleLoadModel.h"
 
 ModuleEditor::ModuleEditor() {
 
 }
 
 ModuleEditor::~ModuleEditor() {
-
+	
 }
 
 bool ModuleEditor::Init() {
@@ -123,7 +126,9 @@ update_status ModuleEditor::Update() {
 
 
 		App->GetInfo()->RenderUI();
-		
+		App->GetTxt()->RenderUI();
+		App->GetModuleLoad()->RenderUI();
+		App->GetLogger()->LogConsole();
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		
@@ -148,6 +153,7 @@ bool ModuleEditor::CleanUp()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
+	
 	return true;
 }
 

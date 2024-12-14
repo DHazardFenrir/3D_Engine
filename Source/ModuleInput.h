@@ -23,7 +23,7 @@ public:
 	bool HandleButtonMouse(SDL_Event sdlEvents);
 	void LoadNewModel(const char* fileName);
 	void LoadNewTexture(const char* dir);
-	
+	bool WarpMouse();
 	update_status Update();
 
 	void ProcessDropFile(const char* dropFile);
@@ -42,5 +42,9 @@ private:
 	char* result = nullptr;
 	char* test = nullptr;
 	bool mouseWarped = false;
+	std::ostringstream SDLInit;
+	std::ostringstream SDLBye;
+	std::ostringstream validTex;
+	std::ostringstream fileDrop;
 	
 };

@@ -1,5 +1,6 @@
 #include "ModuleTexture.h"
 #include "DirectXTex.h"
+#include "imgui.h"
 #include "glew.h"
 #include <iostream>
 #include <locale>
@@ -11,7 +12,9 @@ ModuleTexture::ModuleTexture()
 }
 
 ModuleTexture::~ModuleTexture() {
-
+    
+        
+    
 }
 
 bool ModuleTexture::Init() {
@@ -36,6 +39,7 @@ update_status ModuleTexture::PostUpdate() {
 }
 
 bool ModuleTexture::CleanUp() {
+    glDeleteTextures(1, &textureID);
 	return true;
 }
 
@@ -128,7 +132,7 @@ unsigned int ModuleTexture::ProcessTexture(const DirectX::ScratchImage& image)
         return 0;
     }
 
-    unsigned int textureID;
+    
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -171,6 +175,27 @@ std::wstring ModuleTexture::stringToWString(const std::string& str)
 
 void ModuleTexture::RenderUI()
 {
+    if (ImGui::CollapsingHeader("Texture Info"))
+    {
+        if (ImGui::BeginTabBar("Texture"))
+        {
+            // Pestaña "General Info"
+            if (ImGui::BeginTabItem("Texture Display"))
+            {
+                ImGui::Text("Texture Format: %d \n", image.GetMetadata().format);
+                ImGui::Text("Texture Width: %d\n", image.GetMetadata().width);
+                ImGui::Text("Texture Height: %d\n", image.GetMetadata().height);
+                ImGui::Text("Texture Dimension : %d\n", image.GetMetadata().dimension);
+                ImGui::Text("Mip Levels: %d", image.GetMetadata().mipLevels);
+                ImGui::Text("Array Size: %d", image.GetMetadata().arraySize);
+                ImGui::EndTabItem();
+            }
+
+
+
+            ImGui::EndTabBar();
+        }
+    }
 }
 
 

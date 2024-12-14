@@ -27,6 +27,8 @@ private:
 	DirectX::ScratchImage image;
 	const std::string filePath = "resources/Test-image-Baboon.ppm";
 	unsigned int texture;
+	unsigned int textureID;
+	const DirectX::Image* mip;
 	
 };
 

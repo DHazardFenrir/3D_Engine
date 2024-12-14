@@ -101,7 +101,6 @@ void ModuleRenderExercise::RenderVBO()
 	float4x4 model = App->GetModuleLoad()->GetNewModelMatrix();
 	
 	
-	
 	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
 	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Gray);
 	App->GetDebugDraw()->Draw(view, projection, width, height);

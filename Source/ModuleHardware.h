@@ -10,6 +10,7 @@ public:
 	update_status Update();
 	update_status PostUpdate();
 	void GetGPUInfo();
+	void GetVRAM();
 	bool CleanUp();
 	void RenderUI();
 	float sdlVersion;
