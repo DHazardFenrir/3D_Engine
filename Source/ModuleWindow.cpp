@@ -28,10 +28,16 @@ bool ModuleWindow::Init()
 	else
 	{
 		//Create window
-		int width = SCREEN_WIDTH;
-		int height = SCREEN_HEIGHT;
+		SDL_DisplayMode displayMode;
+		if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0)
+		{
+			std::cout << "Could not get display mode! SDL_Error: %s\n", SDL_GetError();
+			ret = false;
+		}
 		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
+		int width = displayMode.w;
+		int height = displayMode.h;
 		if(FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
@@ -67,7 +73,7 @@ bool ModuleWindow::CleanUp()
 		window = nullptr;
 	}
 
-	//Quit SDL subsystems
+	
 	SDL_Quit();
 	return true;
 }

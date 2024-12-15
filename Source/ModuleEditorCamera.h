@@ -13,8 +13,13 @@ public:
 	ModuleEditorCamera();
 	~ModuleEditorCamera();
 	void TraslateWithKeys();
+	void MoveDown();
+	void MoveUp(float effectiveSpeed);
+	void MoveRight(float effectiveSpeed);
+	void MoveLeft(float effectiveSpeed);
+	void MoveBackwards(float effectiveSpeed);
+	void MoveForward(float effectiveSpeed);
 	void TraslatWithMouse(int xrel, int yrel);
-	void RotateWithMouse();
 	void RotateWithArrows();
 	bool Init();
 	void Pan(int xrel, int yrel);
@@ -34,6 +39,10 @@ public:
 	float4x4 GetViewMatrix() const;
 	update_status PreUpdate();
 	update_status Update();
+	void OrbitCamera();
+	void FocusCamera();
+	void RotateAndPanCamera();
+	void MouseZoom();
 	update_status PostUpdate();
 	void Zoom(float amount);
 	inline float DegToRad(float degrees) {
@@ -44,7 +53,7 @@ public:
 
 private:
 	Frustum frustum = Frustum();
-	Frustum* currentFrustum = nullptr;
+	Frustum* currentFrustum = &frustum;
 	float cameraSpeed = 2.0f;
 	double deltaTime = 0;
 	double fps = 0;
@@ -53,14 +62,15 @@ private:
 	float rotationSpeed = 0.5f;
 	float panSpeed = 0.1;
 	vec cameraPosition;
-	vec cameraDirection;
-	vec cameraTarget;
-	vec cameraUp;
-	vec cameraRight;
 	float nearPlane = 0.1f;
 	float farPlane = 100.0f;
 	float verticalFov = math::pi / 4.0f;
-	float rotationOrbit = 5.0f;
+	float rotationOrbit = 2.0f;
 	float focusDistance = 5.0f;
+
+	float currentPitch = 0.0f; 
+	float currentYaw = 0.0f;   
+	const float maxPitch = 45.0f; 
+	const float maxYaw = 45.0f;   
 };
 

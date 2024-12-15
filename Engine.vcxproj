@@ -358,7 +358,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\Source\glew-2.1.0\include;..\extern\MathGeoLib\include;..\extern\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\Game\bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -386,7 +386,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\3D_Engine\extern\glew-2.1.0\lib\Release\x64;C:\dev\3D_Engine\extern\SDL\lib\x64;C:\dev\3D_Engine\extern\DirectXTex\Bin\Desktop_2022\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\extern\glew-2.1.0\lib\Release\x64;.\extern\SDL\lib\x64;.\extern\DirectXTex\Bin\Desktop_2022\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;%(AdditionalDependencies);glew32s.lib;DirectXTex.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -412,17 +412,18 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MATH_DISABLE_ASSERTIONS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\dev\3D_Engine\extern\imgui;C:\dev\3D_Engine\extern\MathGeoLib\include;C:\dev\3D_Engine\extern\glew-2.1.0\include;C:\dev\3D_Engine\extern\SDL\include;C:\dev\3D_Engine\extern\DirectXTex\installs</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\3D_Engine\Game\bin\Release\InExtern\imgui;C:\dev\3D_Engine\Game\bin\Release\InExtern\MathGeoLib\include;C:\dev\3D_Engine\Game\bin\Release\InExtern\glew-2.1.0\include\GL;C:\dev\3D_Engine\Game\bin\Release\InExtern\SDL\include;C:\dev\3D_Engine\Game\bin\Release\InExtern\DirectXTex;C:\dev\3D_Engine\Game\bin\Release\InExtern\tinygltf</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glew32s.lib;glew32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\dev\3D_Engine\extern\glew-2.1.0\lib\Release\x64;..\extern\MathGeoLib\include;C:\dev\3D_Engine\extern\SDL\lib\x64;C:\dev\3D_Engine\extern\DirectXTex\Bin\Desktop_2022\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glew32s.lib;glew32.lib;opengl32.lib;DirectXTex.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\3D_Engine\Game\bin\Release\InExtern\glew-2.1.0\lib\Release\x64;C:\dev\3D_Engine\Game\bin\Release\InExtern\MathGeoLib\include;C:\dev\3D_Engine\Game\bin\Release\InExtern\SDL\lib\x64;C:\dev\3D_Engine\Game\bin\Release\InExtern\DirectXTex\Bin\Desktop_2022\x64\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

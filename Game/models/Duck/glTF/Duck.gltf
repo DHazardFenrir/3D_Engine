@@ -177,7 +177,7 @@
     ],
     "images": [
         {
-            "uri": "models/Duck/glTF/DuckCM.png"
+            "uri": "DuckCM.png"
         }
     ],
     "samplers": [

@@ -5,7 +5,7 @@
 #include <vector>
 #include <glew.h>
 #include <windows.h>
-#include "MathGeoLib.h"
+
 namespace tinygltf {
 	class Model; class Mesh; class Primitive; class Node;
  }

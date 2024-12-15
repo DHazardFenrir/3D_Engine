@@ -35,10 +35,7 @@ Application::Application()
 
 Application::~Application()
 {
-	for(list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it)
-    {
-        delete *it;
-    }
+	
 }
 
 bool Application::Init()
@@ -71,13 +68,28 @@ bool Application::CleanUp()
 {
 	bool ret = true;
 
-	for(list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it)
+	for (list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it) 
+	{
 		ret = (*it)->CleanUp();
-
+		delete (*it);
+	}
+		
+	logger.ClearLogs();
+	
 	return ret;
 }
 
 void Application::RequestBrowser(const std::string& url)
 {
 	ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+}
+
+void Application::Exit()
+{
+	shouldExit = true;
+}
+
+bool Application::ShouldExit()
+{
+	return shouldExit;
 }

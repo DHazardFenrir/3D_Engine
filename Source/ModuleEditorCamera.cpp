@@ -25,42 +25,24 @@ ModuleEditorCamera::~ModuleEditorCamera() {
 }
 
 void ModuleEditorCamera::TraslateWithKeys() {
-
-	if (App->GetInput()->GetKey(SDL_SCANCODE_W)) 
-	{
-		vec currentTranslation = currentFrustum->Front().Normalized() * cameraSpeed * deltaTime;
-		currentFrustum->SetPos(currentFrustum->Pos() +  currentTranslation);
-		std::cout << currentFrustum->Pos() << std::endl;
+	float effectiveSpeed = cameraSpeed;
+	if (App->GetInput()->GetKey(SDL_SCANCODE_LSHIFT) || App->GetInput()->GetKey(SDL_SCANCODE_RSHIFT)) {
+		effectiveSpeed *= 5.0f; 
 	}
+	MoveForward(effectiveSpeed);
+	MoveBackwards(effectiveSpeed);
 
-	if (App->GetInput()->GetKey(SDL_SCANCODE_S))
-	{
-		vec currentTranslation = currentFrustum->Front().Normalized() * cameraSpeed * deltaTime;
-		currentFrustum->SetPos(currentFrustum->Pos() - currentTranslation);
-		std::cout << currentFrustum->Pos() << std::endl;
-	}
+	MoveLeft(effectiveSpeed);
 
-	if (App->GetInput()->GetKey(SDL_SCANCODE_A))
-	{
-		vec currentTranslation = currentFrustum->WorldRight().Normalized() * cameraSpeed * deltaTime;
-		currentFrustum->SetPos(currentFrustum->Pos() - currentTranslation);
-		std::cout << currentFrustum->Pos() << std::endl;
-	}
+	MoveRight(effectiveSpeed);
 
-	if (App->GetInput()->GetKey(SDL_SCANCODE_D))
-	{
-		vec currentTranslation = currentFrustum->WorldRight().Normalized() * cameraSpeed * deltaTime;
-		currentFrustum->SetPos(currentFrustum->Pos() + currentTranslation);
-		std::cout << currentFrustum->Pos() << std::endl;
-	}
+	MoveUp(effectiveSpeed);
 
-	if (App->GetInput()->GetKey(SDL_SCANCODE_Q))
-	{
-		vec currentTranslation = currentFrustum->Up().Normalized() * cameraSpeed * deltaTime;
-		currentFrustum->SetPos(currentFrustum->Pos() + currentTranslation);
-		std::cout << currentFrustum->Pos() << std::endl;
-	}
+	MoveDown();
+}
 
+void ModuleEditorCamera::MoveDown()
+{
 	if (App->GetInput()->GetKey(SDL_SCANCODE_E))
 	{
 		vec currentTranslation = currentFrustum->Up().Normalized() * cameraSpeed * deltaTime;
@@ -70,141 +52,246 @@ void ModuleEditorCamera::TraslateWithKeys() {
 	}
 }
 
+void ModuleEditorCamera::MoveUp(float effectiveSpeed)
+{
+	if (App->GetInput()->GetKey(SDL_SCANCODE_Q))
+	{
+		vec currentTranslation = currentFrustum->Up().Normalized() * effectiveSpeed * deltaTime;
+		currentFrustum->SetPos(currentFrustum->Pos() + currentTranslation);
+		std::cout << currentFrustum->Pos() << std::endl;
+	}
+}
+
+void ModuleEditorCamera::MoveRight(float effectiveSpeed)
+{
+	if (App->GetInput()->GetKey(SDL_SCANCODE_D))
+	{
+		vec currentTranslation = currentFrustum->WorldRight().Normalized() * effectiveSpeed * deltaTime;
+		currentFrustum->SetPos(currentFrustum->Pos() + currentTranslation);
+		std::cout << currentFrustum->Pos() << std::endl;
+	}
+}
+
+void ModuleEditorCamera::MoveLeft(float effectiveSpeed)
+{
+	if (App->GetInput()->GetKey(SDL_SCANCODE_A))
+	{
+		vec currentTranslation = currentFrustum->WorldRight().Normalized() * effectiveSpeed * deltaTime;
+		currentFrustum->SetPos(currentFrustum->Pos() - currentTranslation);
+		std::cout << currentFrustum->Pos() << std::endl;
+	}
+}
+
+void ModuleEditorCamera::MoveBackwards(float effectiveSpeed)
+{
+
+	if (App->GetInput()->GetKey(SDL_SCANCODE_S))
+	{
+		vec currentTranslation = currentFrustum->Front().Normalized() * effectiveSpeed * deltaTime;
+		currentFrustum->SetPos(currentFrustum->Pos() - currentTranslation);
+		std::cout << currentFrustum->Pos() << std::endl;
+	}
+}
+
+void ModuleEditorCamera::MoveForward(float effectiveSpeed)
+{
+	if (App->GetInput()->GetKey(SDL_SCANCODE_W))
+	{
+		vec currentTranslation = currentFrustum->Front().Normalized() * effectiveSpeed * deltaTime;
+		currentFrustum->SetPos(currentFrustum->Pos() + currentTranslation);
+		std::cout << currentFrustum->Pos() << std::endl;
+	}
+}
+
 void ModuleEditorCamera::TraslatWithMouse(int xrel, int yrel) {
 
-	float rotationSpeed = 5.0f;
-
-	float pitch = -yrel * rotationSpeed * deltaTime;  
-	float yaw = -xrel * rotationSpeed * deltaTime;    
+	float localrotationSpeed = 5.0f;
 
 	
-	Quat yawRotation = Quat::RotateY(DegToRad(yaw));
+	float pitchChange = -yrel * localrotationSpeed * deltaTime;
+	float yawChange = -xrel * localrotationSpeed * deltaTime;
+
+	
+	float newPitch = currentPitch + pitchChange;
+	if (newPitch > maxPitch) {
+		pitchChange = maxPitch - currentPitch;
+		newPitch = maxPitch;
+	}
+	else if (newPitch < -maxPitch) {
+		pitchChange = -maxPitch - currentPitch;
+		newPitch = -maxPitch;
+	}
+	currentPitch = newPitch;
+
+	
+	float newYaw = currentYaw + yawChange;
+	if (newYaw > maxYaw) {
+		yawChange = maxYaw - currentYaw;
+		newYaw = maxYaw;
+	}
+	else if (newYaw < -maxYaw) {
+		yawChange = -maxYaw - currentYaw;
+		newYaw = -maxYaw;
+	}
+	currentYaw = newYaw;
+
+	
+	Quat yawRotation = Quat::RotateY(DegToRad(yawChange));
 	float3 front = yawRotation * currentFrustum->Front();
 	float3 up = yawRotation * currentFrustum->Up();
 
-	
 	float3 right = currentFrustum->WorldRight();
-	Quat pitchRotation = Quat::RotateAxisAngle(right, DegToRad(pitch));
+	Quat pitchRotation = Quat::RotateAxisAngle(right, DegToRad(pitchChange));
 	front = pitchRotation * front;
 	up = pitchRotation * up;
 
-	
 	currentFrustum->SetFront(front.Normalized());
 	currentFrustum->SetUp(up.Normalized());
-	
 
 }
 
 void ModuleEditorCamera::RotateWithArrows() {
-	
+
 	if (App->GetInput()->GetKey(SDL_SCANCODE_UP)) {
-		
-			float pitch = rotationSpeed * deltaTime;
-			SetRotation(float3x3::RotateX(pitch));
+
+		float pitchChange = rotationSpeed * deltaTime;
+		if (currentPitch + pitchChange <= maxPitch) {
+			currentPitch += pitchChange;
+			SetRotation(float3x3::RotateX(pitchChange));
+		}
 	}
 
-	if(App->GetInput()->GetKey(SDL_SCANCODE_DOWN)) {
-		float pitch = -rotationSpeed * deltaTime;
-		 SetRotation(float3x3::RotateX(pitch));
+	if (App->GetInput()->GetKey(SDL_SCANCODE_DOWN)) {
+		float pitchChange = -rotationSpeed * deltaTime;
+		if (currentPitch + pitchChange >= -maxPitch) {
+			currentPitch += pitchChange;
+			SetRotation(float3x3::RotateX(pitchChange));
+		}
 
-		
+
 
 	}
 
 	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT)) {
-		float yaw = rotationSpeed * deltaTime;
-		SetRotation(Quat::RotateY(yaw));
+		float yawChange = rotationSpeed * deltaTime;
+		if (currentYaw + yawChange <= maxYaw) {
+			currentYaw += yawChange;
+			SetRotation(Quat::RotateY(yawChange));
+		}
 
-		
-		
+
+
 	}
 
 
 	if (App->GetInput()->GetKey(SDL_SCANCODE_RIGHT)) {
-		float yaw = -rotationSpeed * deltaTime;
-		SetRotation( Quat::RotateY(yaw));
+		float yawChange = -rotationSpeed * deltaTime;
+		if (currentYaw + yawChange >= -maxYaw) {
+			currentYaw += yawChange;
+			SetRotation(Quat::RotateY(yawChange));
 
-		
-		
+
+
+		}
 	}
 }
 
-bool ModuleEditorCamera::Init() {
-
-	
-	
-	float aspectRatio = App->GetOpenGL()->GetAspectRatio();
-	currentFrustum = &frustum;
-	currentFrustum->SetKind(FrustumSpaceGL, FrustumRightHanded);
-	currentFrustum->SetPos({ 0.0, 2.0, 10.0 });
-
-	currentFrustum->SetFront(-float3::unitZ);
-	currentFrustum->SetUp(float3::unitY);
+	bool ModuleEditorCamera::Init() {
 
 
-	currentFrustum->SetViewPlaneDistances(nearPlane, farPlane);
-	currentFrustum->SetVerticalFovAndAspectRatio(verticalFov, aspectRatio);
-	return true;
-}
 
-update_status ModuleEditorCamera::PreUpdate() {
-	 return UPDATE_CONTINUE;
-}
+		float aspectRatio = App->GetOpenGL()->GetAspectRatio();
+		currentFrustum->SetKind(FrustumSpaceGL, FrustumRightHanded);
+		currentFrustum->SetPos({ 0.0, 2.0, 10.0 });
 
-update_status ModuleEditorCamera::Update() {
+		currentFrustum->SetFront(-float3::unitZ);
+		currentFrustum->SetUp(float3::unitY);
 
-	ImGuiIO& io = ImGui::GetIO();
 
-	
-	if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+		currentFrustum->SetViewPlaneDistances(nearPlane, farPlane);
+		currentFrustum->SetVerticalFovAndAspectRatio(verticalFov, aspectRatio);
+		return true;
+	}
+
+	update_status ModuleEditorCamera::PreUpdate() {
 		return UPDATE_CONTINUE;
 	}
-	static uint64_t previousFrame = SDL_GetPerformanceCounter();
-    uint64_t currentFrame = SDL_GetPerformanceCounter();
 
-    deltaTime = (double)(currentFrame - previousFrame) / SDL_GetPerformanceFrequency();
-    fps = 1.0 / deltaTime;
+	update_status ModuleEditorCamera::Update() {
 
-    previousFrame = currentFrame;
+		ImGuiIO& io = ImGui::GetIO();
 
-	if (App->GetInput()->GetKey(SDL_SCANCODE_F)) 
+
+		if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+			return UPDATE_CONTINUE;
+		}
+		static uint64_t previousFrame = SDL_GetPerformanceCounter();
+		uint64_t currentFrame = SDL_GetPerformanceCounter();
+
+		deltaTime = (double)(currentFrame - previousFrame) / SDL_GetPerformanceFrequency();
+		fps = 1.0 / deltaTime;
+
+		previousFrame = currentFrame;
+
+		FocusCamera();
+
+		if (App->GetInput()->WarpMouse())
+		{
+			TraslateWithKeys();
+			RotateWithArrows();
+
+			OrbitCamera();
+
+			MouseZoom();
+
+
+			RotateAndPanCamera();
+
+		}
+
+
+
+		return UPDATE_CONTINUE;
+	}
+
+
+void ModuleEditorCamera::OrbitCamera()
+{
+	if (App->GetInput()->GetKey(SDL_SCANCODE_LALT))
+	{
+		Orbit(App->GetInput()->mouseX, App->GetInput()->mouseY, 10.0f);
+	}
+}
+
+void ModuleEditorCamera::FocusCamera()
+{
+	if (App->GetInput()->GetKey(SDL_SCANCODE_F))
 	{
 		Focus();
 	}
+}
 
-	if (App->GetInput()->WarpMouse()) 
+void ModuleEditorCamera::RotateAndPanCamera()
+{
+	if (App->GetInput()->buttonLeft)
 	{
-		TraslateWithKeys();
-		RotateWithArrows();
-
-		if (App->GetInput()->GetKey(SDL_SCANCODE_LALT))
-		{
-			Orbit(App->GetInput()->mouseX, App->GetInput()->mouseY, 10.0f);
-		}
-
-		float mouseWheelMotion = App->GetInput()->GetMouseWheelMotion();
-		if (mouseWheelMotion != 0.0f && App->GetInput()->wheelPress)
-		{
-			std::cout << mouseWheelMotion << std::endl;
-			Zoom(mouseWheelMotion * 0.5f);
-
-			App->GetInput()->ResetMouse();
-		}
-
-
-		if (App->GetInput()->buttonLeft)
-		{
-			TraslatWithMouse(App->GetInput()->mouseX, App->GetInput()->mouseY);
-		}
-		if (App->GetInput()->buttonRight) {
-			Pan(App->GetInput()->mouseX, App->GetInput()->mouseY);
-		}
-
+		TraslatWithMouse(App->GetInput()->mouseX, App->GetInput()->mouseY);
 	}
-	
-		
-	
-	return UPDATE_CONTINUE;
+	if (App->GetInput()->buttonRight) {
+		Pan(App->GetInput()->mouseX, App->GetInput()->mouseY);
+	}
+}
+
+void ModuleEditorCamera::MouseZoom()
+{
+	float mouseWheelMotion = App->GetInput()->GetMouseWheelMotion();
+	if (mouseWheelMotion != 0.0f && App->GetInput()->wheelPress)
+	{
+		std::cout << mouseWheelMotion << std::endl;
+		Zoom(mouseWheelMotion * 0.5f);
+
+		App->GetInput()->ResetMouse();
+	}
 }
 
 update_status ModuleEditorCamera::PostUpdate() {
@@ -212,7 +299,7 @@ update_status ModuleEditorCamera::PostUpdate() {
 }
 
 bool ModuleEditorCamera::CleanUp() {
-
+	
 	return true;
 }
 

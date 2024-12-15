@@ -8,6 +8,7 @@
 #include "Application.h"
 #include "ModuleTexture.h"
 #include "SDL.h"
+#include "Mesh.h"
 #include "MathGeoLib.h"
 #include "imgui.h"
 
@@ -185,7 +186,7 @@ void ModuleLoadModel::ProcessNode(const tinygltf::Model& model, int nodeIndex, u
 
             localTransform = float4x4::FromTRS(translation, rotation, scale);
         }
-        globalTransform = parentTransform * localTransform;
+        globalTransform = parentTransform *localTransform;
        
         bool isDuckModel = false;
         if (node.mesh >= 0) {

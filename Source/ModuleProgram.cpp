@@ -72,7 +72,7 @@ char* ModuleProgram::LoadShaderSource(const char* shader_file_name)
     char* data = nullptr;
     FILE* file = nullptr;
 
-    // Usar fopen_s para abrir el archivo
+  
     if (fopen_s(&file, shader_file_name, "rb") == 0)
     {
         fseek(file, 0, SEEK_END);
@@ -85,7 +85,7 @@ char* ModuleProgram::LoadShaderSource(const char* shader_file_name)
     }
     else
     {
-       std::cout<< "Failed to open shader file: %s", shader_file_name; //failed log
+       std::cout<< "Failed to open shader file: %s", shader_file_name; 
     }
     return data;
 }

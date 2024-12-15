@@ -70,13 +70,7 @@ public:
 
 		return ebo;
 	}
-	void DestroyVBO(unsigned vbo);
-	void DestroyVAO(unsigned vao);
-	void DestroyEBO(unsigned ebo);
-	void RenderTriangle();
-	float ToRadians(float degrees) {
-		return degrees * (3.1416/ 180.0f);
-	}
+	
 	unsigned int GetProgram();
 
 private:

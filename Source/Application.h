@@ -42,6 +42,8 @@ public:
     ModuleRenderExercise* GetRender() { return exercise; }
     Logger* GetLogger() { return &logger; }
     void RequestBrowser(const std::string& url);
+    void Exit();
+    bool ShouldExit();
 
 private:
 
@@ -58,6 +60,7 @@ private:
     ModuleLoadModel* mesh = nullptr;
     Logger logger;
     std::list<Module*> modules;
+    bool shouldExit = false;
 
 };
 

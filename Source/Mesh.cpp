@@ -134,17 +134,16 @@ void Mesh::CreateVAO()
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	// Configurar buffer de posiciones
+	
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-	// Configurar buffer de coordenadas de textura
+	
 	glBindBuffer(GL_ARRAY_BUFFER, TexVBO);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-	// Configurar elemento buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glBindVertexArray(0);

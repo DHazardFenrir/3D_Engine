@@ -56,7 +56,7 @@ bool ModuleRenderExercise::Init()
 		 std::cout<<"Failed to locate uniforms in Init";
 		 return false;
 	 }
-	 App->GetModuleLoad()->LoadModel("models/DamagedHelmet/glTF/DamagedHelmet.gltf", shader_program);
+	 App->GetModuleLoad()->LoadModel("models/BakerHouse/BakerHouse.gltf", shader_program);
 	
 	return true;
 }
@@ -85,9 +85,7 @@ bool ModuleRenderExercise::CleanUp()
 	if (vertex_shader_source) free(vertex_shader_source);
 	if (fragment_shader_source) free(fragment_shader_source);
 	glDeleteProgram(shader_program);
-	DestroyVBO(vbo);
-    DestroyVAO(vao);
-    DestroyEBO(ebo);
+	
 	return true;
 }
 
@@ -128,27 +126,9 @@ void ModuleRenderExercise::RenderVBO()
 
 }
 
-void ModuleRenderExercise::RenderTriangle() 
-{
-    
-}
 
 unsigned int ModuleRenderExercise::GetProgram()
 {
 	return shader_program;
 }
 
-void ModuleRenderExercise::DestroyVBO(unsigned vbo) 
-{
-	glDeleteBuffers(1, &vbo);
-}
-
-void ModuleRenderExercise::DestroyVAO(unsigned vao)
-{
-    glDeleteBuffers(1, &vao);
-}
-
-void ModuleRenderExercise::DestroyEBO(unsigned ebo)
-{
-    glDeleteBuffers(1, &ebo);
-}

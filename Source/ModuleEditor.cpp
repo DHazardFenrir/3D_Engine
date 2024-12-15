@@ -65,56 +65,58 @@ update_status ModuleEditor::Update() {
 	
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-		ImGui::Begin("About Window"); // Crear la ventana principal
-		
+
+		if (aboutUI) 
 		{
-			RenderUI();
-		
+			ImGui::Begin("About Window");
+			{
 				
-			
-			
+					RenderUI();
+				
+			}
+			ImGui::End();
 
-			
 		}
 		
-		ImGui::End(); 
-		
-
-		ImGui::Begin("Framerate & Miliseconds Window");
+		if (fpsUI) 
 		{
-			float currentFPS = io.Framerate;
+			ImGui::Begin("Framerate & Miliseconds Window");
+			{
+				float currentFPS = io.Framerate;
 
-			UpdateFpsLog(currentFPS);
+				UpdateFpsLog(currentFPS);
 
-			ImGui::Text("Application average (%.1f FPS)", currentFPS);
-			ImGui::PlotHistogram(
-				"Framerate",
-				fpsLog.data(),
-				FPS_LOG_SIZE,
-				fpsIndex,
-				nullptr,
-				0.0f,
-				*std::max_element(fpsLog.begin(), fpsLog.end()),
-				ImVec2(0, 80)
-			);
+				ImGui::Text("Application average (%.1f FPS)", currentFPS);
+				ImGui::PlotHistogram(
+					"Framerate",
+					fpsLog.data(),
+					FPS_LOG_SIZE,
+					fpsIndex,
+					nullptr,
+					0.0f,
+					*std::max_element(fpsLog.begin(), fpsLog.end()),
+					ImVec2(0, 80)
+				);
 
-			float currentMS = 1000.0f/currentFPS;
+				float currentMS = 1000.0f / currentFPS;
 
-			UpdateMSLog(currentMS);
+				UpdateMSLog(currentMS);
 
-			ImGui::Text("Application average %.3f ms/frame", currentMS);
-			ImGui::PlotHistogram(
-				"Miliseconds",
-				msLog.data(),
-				MS_LOG_SIZE,
-				msLogIndex,
-				nullptr,
-				0.0f,
-				*std::max_element(msLog.begin(), msLog.end()),
-				ImVec2(0, 80)
-			);
+				ImGui::Text("Application average %.3f ms/frame", currentMS);
+				ImGui::PlotHistogram(
+					"Miliseconds",
+					msLog.data(),
+					MS_LOG_SIZE,
+					msLogIndex,
+					nullptr,
+					0.0f,
+					*std::max_element(msLog.begin(), msLog.end()),
+					ImVec2(0, 80)
+				);
+			}
+			ImGui::End();
 		}
-		ImGui::End();
+		
 		
 
 		
@@ -124,16 +126,44 @@ update_status ModuleEditor::Update() {
 		
 	}
 
+	UIControls();
 
+
+	if (infoUI)
 		App->GetInfo()->RenderUI();
+
+	if (textureInfo)
 		App->GetTxt()->RenderUI();
+
+	if (moduleLoadUI)
 		App->GetModuleLoad()->RenderUI();
+
+	if (loggerUI)
 		App->GetLogger()->LogConsole();
+
+	if(exitProgram)
+		App->Exit();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		
 		return UPDATE_CONTINUE;
 	}
+
+void ModuleEditor::UIControls()
+{
+	if (ImGui::Begin("UI Controls"))
+	{
+		ImGui::Checkbox("Render Hardware Info UI", &infoUI);
+		ImGui::Checkbox("Render Texture UI", &textureInfo);
+		ImGui::Checkbox("Render Module Load UI", &moduleLoadUI);
+		ImGui::Checkbox("Render Logger UI", &loggerUI);
+		ImGui::Checkbox("Render About Window  UI", &aboutUI);
+		ImGui::Checkbox("Render FPS Window  UI", &fpsUI);
+		ImGui::Checkbox("Exit Program", &exitProgram);
+	}
+	ImGui::End();
+}
 
 
 
@@ -153,20 +183,27 @@ bool ModuleEditor::CleanUp()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	
+	fpsLog.clear();
+	msLog.clear();
+	fpsLog.shrink_to_fit();
+	msLog.shrink_to_fit();
 	return true;
 }
 
 void ModuleEditor::InitializeFpsLog(int size)
 {
 	FPS_LOG_SIZE = size;
-	fpsLog.resize(FPS_LOG_SIZE, 0.0f);
+	if (fpsLog.size() != FPS_LOG_SIZE) {
+		fpsLog.resize(FPS_LOG_SIZE, 0.0f);
+	}
 }
 
 void ModuleEditor::InitializeMSLog(int size)
 {
 	MS_LOG_SIZE = size;
-	msLog.resize(FPS_LOG_SIZE, 0.0f);
+	if (msLog.size() != MS_LOG_SIZE) {
+		msLog.resize(MS_LOG_SIZE, 0.0f);
+	}
 }
 
 void ModuleEditor::UpdateMSLog(float currentMS)
@@ -210,10 +247,12 @@ void ModuleEditor::RenderUI()
 					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine/issues");
 
 				if (ImGui::Button("Documentation"))
-					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine");
+					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine/wiki");
 
 				if (ImGui::Button("Download latest"))
 					App->RequestBrowser("https://github.com/DHazardFenrir/3D_Engine");
+				
+				
 
 				ImGui::EndTabItem();
 			}

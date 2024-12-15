@@ -8,12 +8,16 @@ void Logger::Log(LogLevel level, const std::string& message) {
     char timestamp[20];
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeInfo);
 
+    if (logMessages.size() >= MAX_LOG_COUNT) {
+        logMessages.erase(logMessages.begin()); // Remove the oldest log
+    }
+    
     std::ostringstream logEntry;
     logEntry << "[" << timestamp << "] " << levelToString(level) << " :: " << message;
 
     std::string logMessage = logEntry.str();
     logMessages.push_back(logMessage); 
-    std::cout << logMessage << std::endl; 
+   
 }
 
 void Logger::LogConsole()
@@ -27,10 +31,16 @@ void Logger::LogConsole()
 
         
         if (ImGui::Button("Clear Logs")) {
-            const_cast<std::vector<std::string>&>(logs).clear(); 
+            ClearLogs();
         }
     }
     ImGui::End();
+}
+
+void Logger::ClearLogs()
+{
+    logMessages.clear();
+    logMessages.shrink_to_fit(); // Ensures memory is released
 }
 
 std::string Logger::levelToString(LogLevel level) {

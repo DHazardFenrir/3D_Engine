@@ -39,12 +39,15 @@ update_status ModuleTexture::PostUpdate() {
 }
 
 bool ModuleTexture::CleanUp() {
+    
     glDeleteTextures(1, &textureID);
+    image.Release();
 	return true;
 }
 
 void ModuleTexture::LoadDDS(const std::string& filePath, DirectX::ScratchImage& img)
 {
+    
     std::wstring wideFileName = stringToWString(filePath);
     HRESULT hr = DirectX::LoadFromDDSFile(wideFileName.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, img);
     const DirectX::TexMetadata& metadata = img.GetMetadata();
@@ -55,6 +58,7 @@ void ModuleTexture::LoadDDS(const std::string& filePath, DirectX::ScratchImage& 
         std::cout << "Trying to load TGA" << std::endl;
         LoadTGA(filePath, img);
     }
+
 
     
 }
@@ -147,6 +151,8 @@ unsigned int ModuleTexture::ProcessTexture(const DirectX::ScratchImage& image)
         const DirectX::Image* mip = image.GetImage(0, 0, 0); 
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mip->width, mip->height, 0, format, type, mip->pixels);
         glGenerateMipmap(GL_TEXTURE_2D);
+        
+        
     }
 
     
@@ -162,6 +168,7 @@ unsigned int ModuleTexture::ProcessTexture(const DirectX::ScratchImage& image)
 
 unsigned int ModuleTexture::Load(const std::string& filePath)
 {
+    image.Release();
     LoadDDS(filePath, image);
     return ProcessTexture(image);
 }

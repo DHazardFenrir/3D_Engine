@@ -60,7 +60,7 @@ int main(int argc, char ** argv)
 				state = MAIN_EXIT;
 			}
 
-			if (update_return == UPDATE_STOP)
+			if (update_return == UPDATE_STOP || App->ShouldExit())
 				state = MAIN_FINISH;
 		}
 			break;

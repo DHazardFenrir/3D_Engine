@@ -17,11 +17,13 @@ public:
     void Log(LogLevel level, const std::string& message);
     const std::vector<std::string>& GetLogs() const { return logMessages; }
     void LogConsole();
+    void ClearLogs();
     ~Logger() {}
 
 private:
     std::string levelToString(LogLevel level);
-    std::vector<std::string> logMessages; // Contenedor para almacenar mensajes de log
+    std::vector<std::string> logMessages; 
+    const size_t MAX_LOG_COUNT = 1000;
 };
 
 
