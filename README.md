@@ -34,4 +34,4 @@ Cerberus Engine is a basic 3D engine developed for educational purposes. It prov
 ## Additional comments
 This engine is designed primarily for educational purposes, showcasing foundational concepts of 3D graphics and rendering. The included models—**BakerHouse**, **Duck**, and **DamagedHelmet**—are used to demonstrate loading and rendering 3D assets within the engine.
 
-Feel free to explore and experiment with the provided controls and models. For any further clarification or issues, please refer to the project's GitHub page or contact the project maintainers.
+Feel free to explore and experiment with the provided controls and models. For any further clarification or issues, please refer to the project's GitHub page.
